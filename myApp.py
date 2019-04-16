@@ -119,9 +119,10 @@ class AppFrame(wx.Frame):
         self.curencyConvertLab = 00.00
         self.measureResult = 00.00
         self.globalCountText.SetLabelText("   Conversion Count: " + str(self.globalCount) + "               ")
-        self.resultLabel.SetLabelText("  "+str(round(self.measureResult, 2)) + "  ")
+        self.unitresultLabel.SetLabelText("  "+str(round(self.measureResult, 2)) + "  ")
         self.currencyResult.SetLabelText("  "+str(self.curencyConvertLab)+"                ")
         self.measurementDrop.SetSelection(0)
+        self.currencyDrop.SetSelection(0)
     
     def setUnitResult(self, result):
         self.unitresultLabel.SetLabelText("  "+str(round(result, 2)) + "     ")
