@@ -26,17 +26,15 @@ class AppFrame(wx.Frame):
         self.sizer = wx.FlexGridSizer(rows=2, cols=1, vgap=10, hgap=20)
 
         #setting up various variables
-        self.inchTOcm = 2.54
-        self.milesTOkilometres = 1.609344
-        self.poundsTOkilograms = 0.4535
-        self.gallonsTOlitres = 0.21997
-        self.celsiusTOkelvin = 273.15
-        self.feetTOmetres = 0.3048
-        self.acresTOhectares = 0.404685642
+        self.unitFactors = [2.54, 1.609344, 0.4535, 0.21997, 0.3048, 273.15, 0.404685642] 
         self.globalCount = 0
         self.measureResult = 00.00
         self.curencyConvertLab = 00.00
-
+        self.unitCombo = ["Inches/Centimeters", "Miles/Kilometres", "Pounds/Kilograms", "Gallons/Litres", "Feet/Metres", "Celcius/Kelvin", "Acres/Hectare"]
+        self.currencyCombo = ["Euro (EUR)", "US Dollars (USD)", "Australian Dollars (AUD)", "Canadian Dollars (CAD)", "Icelandic króna (ISK)", "United Arab Emirates Dirham (AED)", "South African Rand (ZAR)", "Thai Baht (THB)"]
+        self.currencyFactors = [1.359, 1.34, 1.756, 1.71, 140.84, 4.92, 17.84, 43.58]
+        self.currencySymbols = ["€", "$", "$", "$", "kr", "د.إ", "R", "฿"]
+        
         # Creating various UI elements for the unit conversion module
         self.unitConversion = wx.StaticBox(self.mainPanel, wx.ID_ANY, "Unit Conversion", size=(850,100))
         self.uerInputLabel = wx.StaticText(self.mainPanel, wx.ID_ANY, "   Value: ")
@@ -46,7 +44,7 @@ class AppFrame(wx.Frame):
         self.unitConvertButton = wx.Button(self.mainPanel, wx.ID_ANY, "Convert")
         self.clearThings = wx.Button(self.mainPanel, wx.ID_ANY, "Clear")
         self.globalCalcReverse = wx.CheckBox(self.mainPanel,  wx.ID_ANY, "Reverse calculation")
-        self.unitCombo = ["Inches/Centimeters", "Miles/Kilometres", "Pounds/Kilograms", "Gallons/Litres", "Feet/Metres", "Celcius/Kelvin", "Acres/Hectare"]
+        
         self.measurementDrop = wx.ComboBox(self.mainPanel, choices=self.unitCombo, style=wx.CB_READONLY)
 
         #Adding stuff to the unitConversion boxSizer, which allows it to scale.
@@ -63,9 +61,6 @@ class AppFrame(wx.Frame):
 
         # Creating various UI elements for the currency conversion module
         self.currencyConversion = wx.StaticBox(self.mainPanel, wx.ID_ANY, "Currency Conversion", size=(850,100))
-        self.currencyCombo = ["Euro (EUR)", "US Dollars (USD)", "Australian Dollars (AUD)", "Canadian Dollars (CAD)", "Icelandic króna (ISK)", "United Arab Emirates Dirham (AED)", "South African Rand (ZAR)", "Thai Baht (THB)"]
-        self.currencyFactors = [1.359, 1.34, 1.756, 1.71, 140.84, 4.92, 17.84, 43.58]
-        self.currencySymbols = ["€", "$", "$", "$", "kr", "د.إ", "R", "฿"]
         self.currencyDrop = wx.ComboBox(self.mainPanel, choices=self.currencyCombo, style=wx.CB_READONLY)
         self.userCurrencyLabel = wx.StaticText(self.mainPanel, wx.ID_ANY, "   Value: ")
         self.currencyInput = wx.TextCtrl(self.mainPanel, wx.ID_ANY, "")
@@ -147,6 +142,8 @@ class AppFrame(wx.Frame):
         return result
     def getFactor(self):
         return self.currencyFactors[self.currencyDrop.GetSelection()]
+    def getunitFactor(self):
+        return self.unitFactors[self.measurementDrop.GetSelection()]
     def getSymbol(self):
         return self.currencySymbols[self.currencyDrop.GetSelection()]
     def getDefault(self):
@@ -156,138 +153,39 @@ class AppFrame(wx.Frame):
 
         n = self.measurementDrop.GetSelection()
         
-        if n == 0:
+        if n in (0,1,2,4,6):
             if self.globalCalcReverse.GetValue() == False:
                 self.globalCount+=1
                 self.globalCountText.SetLabelText("   Conversion Count: " + str(self.globalCount) + "  ")
-                self.setUnitResult(self.convertMulti(self.inchTOcm, int(self.unitUserInputBox.GetValue())))
+                self.setUnitResult(self.convertMulti(self.getunitFactor(), int(self.unitUserInputBox.GetValue())))
             else:
                 self.globalCount+=1
                 self.globalCountText.SetLabelText("   Conversion Count: " + str(self.globalCount) + "  ")
-                self.setUnitResult(self.convertDivi(self.inchTOcm, int(self.unitUserInputBox.GetValue())))
-        elif n == 1:
-            if self.globalCalcReverse.GetValue() == False:
-                self.globalCount+=1
-                self.globalCountText.SetLabelText("   Conversion Count: " + str(self.globalCount) + "  ")
-                self.setUnitResult(self.convertMulti(self.milesTOkilometres, int(self.unitUserInputBox.GetValue())))
-            else:
-                self.globalCount+=1
-                self.globalCountText.SetLabelText("   Conversion Count: " + str(self.globalCount) + "  ")
-                self.setUnitResult(self.convertDivi(self.milesTOkilometres, int(self.unitUserInputBox.GetValue())))
-        elif n == 2:
-            if self.globalCalcReverse.GetValue() == False:
-                self.globalCount+=1
-                self.globalCountText.SetLabelText("   Conversion Count: " + str(self.globalCount) + "  ")
-                self.setUnitResult(self.convertMulti(self.poundsTOkilograms, int(self.unitUserInputBox.GetValue())))
-            else:
-                self.globalCount+=1
-                self.globalCountText.SetLabelText("   Conversion Count: " + str(self.globalCount) + "  ")
-                self.setUnitResult(self.convertDivi(self.poundsTOkilograms, int(self.unitUserInputBox.GetValue())))
+                self.setUnitResult(self.convertDivi(self.getunitFactor(), int(self.unitUserInputBox.GetValue())))
         elif n == 3:
             if self.globalCalcReverse.GetValue() == False:
                 self.globalCount+=1
                 self.globalCountText.SetLabelText("   Conversion Count: " + str(self.globalCount) + "  ")
-                self.setUnitResult(self.convertDivi(self.gallonsTOlitres, int(self.unitUserInputBox.GetValue())))
+                self.setUnitResult(self.convertDivi(self.getunitFactor(), int(self.unitUserInputBox.GetValue())))
             else:
                 self.globalCount+=1
                 self.globalCountText.SetLabelText("   Conversion Count: " + str(self.globalCount) + "  ")
-                self.setUnitResult(self.convertMulti(self.gallonsTOlitres, int(self.unitUserInputBox.GetValue())))
-        elif n == 4:
-            if self.globalCalcReverse.GetValue() == False:
-                self.globalCount+=1
-                self.globalCountText.SetLabelText("   Conversion Count: " + str(self.globalCount) + "  ")
-                self.setUnitResult(self.convertMulti(self.feetTOmetres, int(self.unitUserInputBox.GetValue())))
-            else:
-                self.globalCount+=1
-                self.globalCountText.SetLabelText("   Conversion Count: " + str(self.globalCount) + "  ")
-                self.setUnitResult(self.convertDivi(self.feetTOmetres, int(self.unitUserInputBox.GetValue())))
+                self.setUnitResult(self.convertMulti(self.getunitFactor(), int(self.unitUserInputBox.GetValue())))
         elif n == 5:
             if self.globalCalcReverse.GetValue() == False:
                 self.globalCount+=1
                 self.globalCountText.SetLabelText("   Conversion Count: " + str(self.globalCount) + "  ")
-                self.setUnitResult(self.convertPlus(self.celsiusTOkelvin, int(self.unitUserInputBox.GetValue())))
+                self.setUnitResult(self.convertPlus(self.getunitFactor(), int(self.unitUserInputBox.GetValue())))
             else:
                 self.globalCount+=1
                 self.globalCountText.SetLabelText("   Conversion Count: " + str(self.globalCount) + "  ")
-                self.setUnitResult(self.convertNeg(self.celsiusTOkelvin, int(self.unitUserInputBox.GetValue())))
-        elif n == 6:
-            if self.globalCalcReverse.GetValue() == False:
-                self.globalCount+=1
-                self.globalCountText.SetLabelText("   Conversion Count: " + str(self.globalCount) + "  ")
-                self.setUnitResult(self.convertMulti(self.acresTOhectares, int(self.unitUserInputBox.GetValue())))
-            else:
-                self.globalCount+=1
-                self.globalCountText.SetLabelText("   Conversion Count: " + str(self.globalCount) + "  ")
-                self.setUnitResult(self.convertDivi(self.acresTOhectares, int(self.unitUserInputBox.GetValue())))
+                self.setUnitResult(self.convertNeg(self.getunitFactor(), int(self.unitUserInputBox.GetValue())))
 
     def currencyCalculation(self):
 
         bn = self.currencyDrop.GetSelection()
         
-        if bn == 0:
-            if self.globalCalcReverse.GetValue() == False:
-                self.globalCount+=1
-                self.globalCountText.SetLabelText("   Conversion Count: " + str(self.globalCount) + "  ")
-                self.setCurrResult(self.convertMulti(self.getFactor(), float(self.currencyInput.GetValue())))
-            else:
-                self.globalCount+=1
-                self.globalCountText.SetLabelText("   Conversion Count: " + str(self.globalCount) + "  ")
-                self.setCurrResult(self.convertDivi(self.getFactor(), float(self.currencyInput.GetValue())))
-        elif bn == 1:
-            if self.globalCalcReverse.GetValue() == False:
-                self.globalCount+=1
-                self.globalCountText.SetLabelText("   Conversion Count: " + str(self.globalCount) + "  ")
-                self.setCurrResult(self.convertMulti(self.getFactor(), float(self.currencyInput.GetValue())))
-            else:
-                self.globalCount+=1
-                self.globalCountText.SetLabelText("   Conversion Count: " + str(self.globalCount) + "  ")
-                self.setCurrResult(self.convertDivi(self.getFactor(), float(self.currencyInput.GetValue())))
-        elif bn == 2:
-            if self.globalCalcReverse.GetValue() == False:
-                self.globalCount+=1
-                self.globalCountText.SetLabelText("   Conversion Count: " + str(self.globalCount) + "  ")
-                self.setCurrResult(self.convertMulti(self.getFactor(), float(self.currencyInput.GetValue())))
-            else:
-                self.globalCount+=1
-                self.globalCountText.SetLabelText("   Conversion Count: " + str(self.globalCount) + "  ")
-                self.setCurrResult(self.convertDivi(self.getFactor(), float(self.currencyInput.GetValue())))
-        elif bn == 3:
-            if self.globalCalcReverse.GetValue() == False:
-                self.globalCount+=1
-                self.globalCountText.SetLabelText("   Conversion Count: " + str(self.globalCount) + "  ")
-                self.setCurrResult(self.convertMulti(self.getFactor(), float(self.currencyInput.GetValue())))
-            else:
-                self.globalCount+=1
-                self.globalCountText.SetLabelText("   Conversion Count: " + str(self.globalCount) + "  ")
-                self.setCurrResult(self.convertDivi(self.getFactor(), float(self.currencyInput.GetValue())))
-        elif bn == 4:
-            if self.globalCalcReverse.GetValue() == False:
-                self.globalCount+=1
-                self.globalCountText.SetLabelText("   Conversion Count: " + str(self.globalCount) + "  ")
-                self.setCurrResult(self.convertMulti(self.getFactor(), float(self.currencyInput.GetValue())))
-            else:
-                self.globalCount+=1
-                self.globalCountText.SetLabelText("   Conversion Count: " + str(self.globalCount) + "  ")
-                self.setCurrResult(self.convertDivi(self.getFactor(), float(self.currencyInput.GetValue())))
-        elif bn == 5:
-            if self.globalCalcReverse.GetValue() == False:
-                self.globalCount+=1
-                self.globalCountText.SetLabelText("   Conversion Count: " + str(self.globalCount) + "  ")
-                self.setCurrResult(self.convertMulti(self.getFactor(), float(self.currencyInput.GetValue())))
-            else:
-                self.globalCount+=1
-                self.globalCountText.SetLabelText("   Conversion Count: " + str(self.globalCount) + "  ")
-                self.setCurrResult(self.convertDivi(self.getFactor(), float(self.currencyInput.GetValue())))
-        elif bn == 6:
-            if self.globalCalcReverse.GetValue() == False:
-                self.globalCount+=1
-                self.globalCountText.SetLabelText("   Conversion Count: " + str(self.globalCount) + "  ")
-                self.setCurrResult(self.convertMulti(self.getFactor(), float(self.currencyInput.GetValue())))
-            else:
-                self.globalCount+=1
-                self.globalCountText.SetLabelText("   Conversion Count: " + str(self.globalCount) + "  ")
-                self.setCurrResult(self.convertDivi(self.getFactor(), float(self.currencyInput.GetValue())))
-        elif bn == 7:
+        if bn in (0,1,2,3,4,5,6,7):
             if self.globalCalcReverse.GetValue() == False:
                 self.globalCount+=1
                 self.globalCountText.SetLabelText("   Conversion Count: " + str(self.globalCount) + "  ")
