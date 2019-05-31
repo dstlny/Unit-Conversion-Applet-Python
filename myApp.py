@@ -29,7 +29,7 @@ class AppFrame(wx.Frame):
         self.unitFactors = [2.54, 1.609344, 0.4535, 0.21997, 0.3048, 273.15, 0.404685642] 
         self.globalCount = 0
         self.measureResult = 00.00
-        self.curencyConvertLab = 00.00
+        self.currencyConvertLab = 00.00
         self.unitCombo = ["Inches/Centimeters", "Miles/Kilometres", "Pounds/Kilograms", "Gallons/Litres", "Feet/Metres", "Celcius/Kelvin", "Acres/Hectare"]
         self.currencyCombo = ["Pounds (GBP)/Euro (EUR)", "Pounds (GBP)/US Dollars (USD)", "Pounds (GBP)/Australian Dollars (AUD)", "Pounds (GBP)/Canadian Dollars (CAD)", "Pounds (GBP)/Icelandic króna (ISK)", "Pounds (GBP)/United Arab Emirates Dirham (AED)", "Pounds (GBP)/South African Rand (ZAR)", "Pounds (GBP)/Thai Baht (THB)"]
         self.currencyFactors = [1.359, 1.34, 1.756, 1.71, 140.84, 4.92, 17.84, 43.58]
@@ -38,8 +38,8 @@ class AppFrame(wx.Frame):
         
         # Creating various UI elements for the unit conversion module
         self.unitConversion = wx.StaticBox(self.mainPanel, wx.ID_ANY, "Unit Conversion", size=(850,100))
-        self.uerInputLabel = wx.StaticText(self.mainPanel, wx.ID_ANY, "   Value: ")
-        self.unitresultLabel = wx.StaticText(self.mainPanel, wx.ID_ANY, "  "+str(self.measureResult)+"                ")
+        self.userInputLabel = wx.StaticText(self.mainPanel, wx.ID_ANY, "   Value: ")
+        self.unitResultLabel = wx.StaticText(self.mainPanel, wx.ID_ANY, "  "+str(self.measureResult)+"                ")
         self.globalCountText = wx.StaticText(self.mainPanel, wx.ID_ANY, self.CountText + str(self.globalCount) + "   ")
         self.unitUserInputBox = wx.TextCtrl(self.mainPanel, wx.ID_ANY, "")
         self.unitConvertButton = wx.Button(self.mainPanel, wx.ID_ANY, "Convert")
@@ -50,9 +50,9 @@ class AppFrame(wx.Frame):
         #Adding stuff to the unitConversion boxSizer, which allows it to scale.
         self.unitConversionSizer = wx.StaticBoxSizer(self.unitConversion, wx.HORIZONTAL)
         self.unitConversionSizer.Add(self.measurementDrop)
-        self.unitConversionSizer.Add(self.uerInputLabel)
+        self.unitConversionSizer.Add(self.userInputLabel)
         self.unitConversionSizer.Add(self.unitUserInputBox)
-        self.unitConversionSizer.Add(self.unitresultLabel)
+        self.unitConversionSizer.Add(self.unitResultLabel)
         self.unitConversionSizer.Add(self.unitConvertButton)
         self.unitConversionSizer.Add(self.clearThings)
         self.unitConversionSizer.Add(self.globalCountText)
@@ -64,7 +64,7 @@ class AppFrame(wx.Frame):
         self.currencyDrop = wx.ComboBox(self.mainPanel, choices=self.currencyCombo, style=wx.CB_READONLY)
         self.userCurrencyLabel = wx.StaticText(self.mainPanel, wx.ID_ANY, "   Value: ")
         self.currencyInput = wx.TextCtrl(self.mainPanel, wx.ID_ANY, "")
-        self.currencyResult = wx.StaticText(self.mainPanel, wx.ID_ANY, "  "+str(self.curencyConvertLab)+"                ")
+        self.currencyResult = wx.StaticText(self.mainPanel, wx.ID_ANY, "  "+str(self.currencyConvertLab)+"                ")
         self.currConvertButton = wx.Button(self.mainPanel, wx.ID_ANY, "Convert")
 
         #Adding stuff to the currencyConversion boxSizers, which allows it to scale.
@@ -114,20 +114,20 @@ class AppFrame(wx.Frame):
         self.curencyConvertLab = 00.00
         self.measureResult = 00.00
         self.globalCountText.SetLabelText(self.CountText + str(self.globalCount) + "               ")
-        self.unitresultLabel.SetLabelText("  "+str(round(self.measureResult, 2)) + "  ")
-        self.currencyResult.SetLabelText("  "+str(self.curencyConvertLab)+"                ")
+        self.unitResultLabel.SetLabelText("  "+str(round(self.measureResult, 2)) + "  ")
+        self.currencyResult.SetLabelText("  "+str(self.currencyConvertLab)+"                ")
         self.measurementDrop.SetSelection(0)
         self.currencyDrop.SetSelection(0)
     
     def setUnitResult(self, result):
-        self.unitresultLabel.SetLabelText("  "+str(round(result, 2)) + "     ")
+        self.unitResultLabel.SetLabelText("  "+str(round(result, 2)) + "     ")
     def setCurrResult(self, result):
         self.curencyConvertLab = result
         if self.globalCalcReverse.GetValue() == False:
-            self.currencyResult.SetLabelText("  "+str(self.getSymbol())+""+str(round(self.curencyConvertLab, 2))+ "     ")
+            self.currencyResult.SetLabelText("  "+str(self.getSymbol())+""+str(round(self.currencyConvertLab, 2))+ "     ")
         else:
             self.curencyConvertLab = result
-            self.currencyResult.SetLabelText("  "+str(self.getDefault())+""+str(round(self.curencyConvertLab, 2))+ "     ")
+            self.currencyResult.SetLabelText("  "+str(self.getDefault())+""+str(round(self.currencyConvertLab, 2))+ "     ")
     def convertMulti(self, a, b):
         return (b * a)
     def convertDivi(self, a, b):
@@ -136,9 +136,9 @@ class AppFrame(wx.Frame):
         return (b + a)
     def convertNeg(self, a, b):
         return (b - a)
-    def getFactor(self):
+    def getCurrencyFactor(self):
         return self.currencyFactors[self.currencyDrop.GetSelection()]
-    def getunitFactor(self):
+    def getUnitFactor(self):
         return self.unitFactors[self.measurementDrop.GetSelection()]
     def getSymbol(self):
         return self.currencySymbols[self.currencyDrop.GetSelection()]
@@ -153,29 +153,29 @@ class AppFrame(wx.Frame):
             if self.globalCalcReverse.GetValue() == False:
                 self.globalCount+=1
                 self.globalCountText.SetLabelText(self.CountText + str(self.globalCount) + "  ")
-                self.setUnitResult(self.convertMulti(self.getunitFactor(), int(self.unitUserInputBox.GetValue())))
+                self.setUnitResult(self.convertMulti(self.getUnitFactor(), int(self.unitUserInputBox.GetValue())))
             else:
                 self.globalCount+=1
                 self.globalCountText.SetLabelText(self.CountText + str(self.globalCount) + "  ")
-                self.setUnitResult(self.convertDivi(self.getunitFactor(), int(self.unitUserInputBox.GetValue())))
+                self.setUnitResult(self.convertDivi(self.getUnitFactor(), int(self.unitUserInputBox.GetValue())))
         elif self.n == 3:
             if self.globalCalcReverse.GetValue() == False:
                 self.globalCount+=1
                 self.globalCountText.SetLabelText(self.CountText + str(self.globalCount) + "  ")
-                self.setUnitResult(self.convertDivi(self.getunitFactor(), int(self.unitUserInputBox.GetValue())))
+                self.setUnitResult(self.convertDivi(self.getUnitFactor(), int(self.unitUserInputBox.GetValue())))
             else:
                 self.globalCount+=1
                 self.globalCountText.SetLabelText(self.CountText + str(self.globalCount) + "  ")
-                self.setUnitResult(self.convertMulti(self.getunitFactor(), int(self.unitUserInputBox.GetValue())))
+                self.setUnitResult(self.convertMulti(self.getUnitFactor(), int(self.unitUserInputBox.GetValue())))
         elif self.n == 5:
             if self.globalCalcReverse.GetValue() == False:
                 self.globalCount+=1
                 self.globalCountText.SetLabelText(self.CountText + str(self.globalCount) + "  ")
-                self.setUnitResult(self.convertPlus(self.getunitFactor(), int(self.unitUserInputBox.GetValue())))
+                self.setUnitResult(self.convertPlus(self.getUnitFactor(), int(self.unitUserInputBox.GetValue())))
             else:
                 self.globalCount+=1
                 self.globalCountText.SetLabelText(self.CountText + str(self.globalCount) + "  ")
-                self.setUnitResult(self.convertNeg(self.getunitFactor(), int(self.unitUserInputBox.GetValue())))
+                self.setUnitResult(self.convertNeg(self.getUnitFactor(), int(self.unitUserInputBox.GetValue())))
 
     def currencyCalculation(self):
 
@@ -186,11 +186,11 @@ class AppFrame(wx.Frame):
             if self.globalCalcReverse.GetValue() == False:
                 self.globalCount+=1
                 self.globalCountText.SetLabelText(self.CountText + str(self.globalCount) + "  ")
-                self.setCurrResult(self.convertMulti(self.getFactor(), float(self.currencyInput.GetValue())))
+                self.setCurrResult(self.convertMulti(self.getCurrencyFactor(), float(self.currencyInput.GetValue())))
             else:
                 self.globalCount+=1
                 self.globalCountText.SetLabelText(self.CountText + str(self.globalCount) + "  ")
-                self.setCurrResult(self.convertDivi(self.getFactor(), float(self.currencyInput.GetValue())))
+                self.setCurrResult(self.convertDivi(self.getCurrencyFactor(), float(self.currencyInput.GetValue())))
 
     def onUnitConvert(self, event):
         """Do something"""
