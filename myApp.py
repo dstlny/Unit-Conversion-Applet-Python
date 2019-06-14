@@ -27,14 +27,13 @@ class AppFrame(wx.Frame):
             self.currencySymbols = []
             self.contents = []
 
-            with io.open(self.filePath, 'r', encoding='utf-8') as f:
+            with io.open(self.filePath, 'r', encoding='utf-8-sig') as f:
                 self.contents = f.readlines()
 
             self.contents = [x.strip('\t') for x in self.contents]
             self.contents = [x.strip('\n') for x in self.contents] 
             self.contents = [x.replace('\t','') for x in self.contents]
             self.contents = [x.replace(', ',',') for x in self.contents]
-            ##print(self.contents)  
 
             for i in self.contents:
                 currName, currFactor, currSymbol = i.split(',')
@@ -142,15 +141,15 @@ class AppFrame(wx.Frame):
         self.filePath = self.openFileDialog.GetPath()
 
         try:
-            self.currencyCombo = []
-            self.currencyFactors = []
-            self.currencySymbols = []
-            self.contents = []
+            self.currencyCombo.clear()
+            self.currencyFactors.clear()
+            self.currencySymbols.clear()
+            self.contents.clear()
             self.currName = ""
             self.currFactor = ""
             self.currSymbol = ""
 
-            with io.open(self.filePath, 'r', encoding='utf-8') as f:
+            with io.open(self.filePath, 'r', encoding='utf-8-sig') as f:
                 self.contents = f.readlines()
 
             self.contents = [x.strip('\t') for x in self.contents]
@@ -167,15 +166,13 @@ class AppFrame(wx.Frame):
                     try:
                         self.currFactor = float(self.currFactor)
                     except Exception as exception:
-                        print(exception)
-
+                        
                         self.currName = ""
                         self.currFactor = 00.00
                         self.currSymbol = ""
                         continue
 
                 except ValueError as exception:
-                    print(exception)
                     continue
 
                 else:
@@ -261,19 +258,17 @@ class AppFrame(wx.Frame):
     def currencyCalculation(self):
 
         self.bn = self.currencyDrop.GetSelection()
-        self.r = range(0,8)
+        self.r = range(0,len(self.currencyFactors))
         
         if self.bn in self.r:
             if self.globalCalcReverse.GetValue() == False:
                 self.globalCount+=1
                 self.globalCountText.SetLabelText(self.CountText + str(self.globalCount) + "  ")
                 self.setCurrResult(self.convertMulti(self.getCurrencyFactor(), float(self.currencyInput.GetValue())))
-                print(self.convertMulti(self.getCurrencyFactor(), float(self.currencyInput.GetValue())))
             else:
                 self.globalCount+=1
                 self.globalCountText.SetLabelText(self.CountText + str(self.globalCount) + "  ")
                 self.setCurrResult(self.convertDivi(self.getCurrencyFactor(), float(self.currencyInput.GetValue())))
-                print(self.convertDivi(self.getCurrencyFactor(), float(self.currencyInput.GetValue())))
 
     def onUnitConvert(self, event):
         """Do something"""
