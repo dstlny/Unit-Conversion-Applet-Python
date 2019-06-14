@@ -18,6 +18,33 @@ class AppFrame(wx.Frame):
         self.SetSize(900, 900)
         self.mainPanel()
 
+    def onInitialCurrencyLoad(self):
+        self.filePath = "C:\\Users\\Luke\\Documents\\GitHub\\Java-Projects-Combined\\src\\currency.txt"
+
+        try:
+            self.currencyCombo = []
+            self.currencyFactors = []
+            self.currencySymbols = []
+            self.contents = []
+
+            with io.open(self.filePath, 'r', encoding='utf-8') as f:
+                self.contents = f.readlines()
+
+            self.contents = [x.strip('\t') for x in self.contents]
+            self.contents = [x.strip('\n') for x in self.contents] 
+            self.contents = [x.replace('\t','') for x in self.contents]
+            self.contents = [x.replace(', ',',') for x in self.contents]
+            ##print(self.contents)  
+
+            for i in self.contents:
+                currName, currFactor, currSymbol = i.split(',')
+                self.currencyCombo.append(currName)
+                self.currencyFactors.append(float(currFactor))
+                self.currencySymbols.append(currSymbol)
+
+        except Exception as exception:
+            print(exception)
+
     def mainPanel(self):
         #Setting up the panel and stuff.
         self.mainPanel = wx.Panel(self)
