@@ -1,4 +1,6 @@
 import wx
+import io
+import itertools 
 
 class AppFrame(wx.Frame):
 
@@ -12,7 +14,8 @@ class AppFrame(wx.Frame):
         # and a status bar
         self.CreateStatusBar()
         self.SetStatusText("Welcome to my Python port of my Java application!")
-        self.SetSize(900, 300)
+        self.onInitialCurrencyLoad()
+        self.SetSize(900, 900)
         self.mainPanel()
 
     def mainPanel(self):
@@ -23,7 +26,7 @@ class AppFrame(wx.Frame):
         self.outHSizer = wx.BoxSizer(wx.HORIZONTAL)
         self.outVSizer.AddStretchSpacer(1)
         self.outHSizer.AddStretchSpacer(1)
-        self.sizer = wx.FlexGridSizer(rows=2, cols=1, vgap=10, hgap=20)
+        self.sizer = wx.FlexGridSizer(rows=3, cols=1, vgap=10, hgap=20)
 
         #setting up various variables
         self.unitFactors = [2.54, 1.609344, 0.4535, 0.21997, 0.3048, 273.15, 0.404685642] 
@@ -31,9 +34,6 @@ class AppFrame(wx.Frame):
         self.measureResult = 00.00
         self.currencyConvertLab = 00.00
         self.unitCombo = ["Inches/Centimeters", "Miles/Kilometres", "Pounds/Kilograms", "Gallons/Litres", "Feet/Metres", "Celcius/Kelvin", "Acres/Hectare"]
-        self.currencyCombo = ["Pounds (GBP)/Euro (EUR)", "Pounds (GBP)/US Dollars (USD)", "Pounds (GBP)/Australian Dollars (AUD)", "Pounds (GBP)/Canadian Dollars (CAD)", "Pounds (GBP)/Icelandic króna (ISK)", "Pounds (GBP)/United Arab Emirates Dirham (AED)", "Pounds (GBP)/South African Rand (ZAR)", "Pounds (GBP)/Thai Baht (THB)"]
-        self.currencyFactors = [1.359, 1.34, 1.756, 1.71, 140.84, 4.92, 17.84, 43.58]
-        self.currencySymbols = ["€", "$", "$", "$", "kr", "د.إ", "R", "฿"]
         self.CountText = "   Conversion Count: "
         
         # Creating various UI elements for the unit conversion module
@@ -79,7 +79,7 @@ class AppFrame(wx.Frame):
         # Bind events to things
         self.Bind(wx.EVT_BUTTON, self.onCurrConvert, self.currConvertButton)
         self.Bind(wx.EVT_BUTTON, self.onUnitConvert, self.unitConvertButton)
-        self.Bind(wx.EVT_BUTTON, self.OnClear, self.clearThings)
+        self.Bind(wx.EVT_BUTTON, self.onClear, self.clearThings)
 
         # Basically making sure it's responsive
         self.outHSizer.Add(self.sizer, flag=wx.EXPAND, proportion=15)
@@ -93,20 +93,76 @@ class AppFrame(wx.Frame):
 
         fileMenu = wx.Menu()
         exitItem = fileMenu.Append(wx.ID_EXIT)
+        loadCurrency = fileMenu.Append(wx.ID_OPEN, '&Load Currency File..')
         helpMenu = wx.Menu()
         aboutItem = helpMenu.Append(wx.ID_ABOUT)
         menuBar = wx.MenuBar()
         menuBar.Append(fileMenu, "&File")
         menuBar.Append(helpMenu, "&Help")
         self.SetMenuBar(menuBar)
-        self.Bind(wx.EVT_MENU, self.OnExit,  exitItem)
-        self.Bind(wx.EVT_MENU, self.OnAbout, aboutItem)
-
-    def OnExit(self, event):
+        self.Bind(wx.EVT_MENU, self.onExit,  exitItem)
+        self.Bind(wx.EVT_MENU, self.onAbout, aboutItem)
+        self.Bind(wx.EVT_MENU, self.onLoadCurrency, loadCurrency)
+        
+    def onExit(self, event):
         """Close the frame, terminating the application."""
         self.Close(True)
 
-    def OnClear(self, event):
+    def onLoadCurrency(self, event):
+        self.openFileDialog = wx.FileDialog(self, "Open a currency file...", "", "", 
+        "Text files (*.txt)|*.txt", wx.FD_OPEN | wx.FD_FILE_MUST_EXIST)
+        self.openFileDialog.ShowModal()
+        self.filePath = self.openFileDialog.GetPath()
+
+        try:
+            self.currencyCombo = []
+            self.currencyFactors = []
+            self.currencySymbols = []
+            self.contents = []
+            self.currName = ""
+            self.currFactor = ""
+            self.currSymbol = ""
+
+            with io.open(self.filePath, 'r', encoding='utf-8') as f:
+                self.contents = f.readlines()
+
+            self.contents = [x.strip('\t') for x in self.contents]
+            self.contents = [x.strip('\n') for x in self.contents] 
+            self.contents = [x.replace('\t','') for x in self.contents]
+            self.contents = [x.replace(', ',',') for x in self.contents]
+             
+            for i in self.contents:
+                
+                try:
+
+                    self.currName, self.currFactor, self.currSymbol = i.split(',')
+                    
+                    try:
+                        self.currFactor = float(self.currFactor)
+                    except Exception as exception:
+                        print(exception)
+
+                        self.currName = ""
+                        self.currFactor = 00.00
+                        self.currSymbol = ""
+                        continue
+
+                except ValueError as exception:
+                    print(exception)
+                    continue
+
+                else:
+                    self.currencyCombo.append(self.currName)
+                    self.currencyFactors.append(self.currFactor)
+                    self.currencySymbols.append(self.currSymbol)
+                    self.currencyDrop.Clear()
+                    self.currencyDrop.AppendItems(self.currencyCombo)
+                    
+
+        except Exception as exception:
+            print(exception)
+
+    def onClear(self, event):
         """Do something"""
         self.unitUserInputBox.Clear()
         self.currencyInput.Clear()
@@ -122,12 +178,10 @@ class AppFrame(wx.Frame):
     def setUnitResult(self, result):
         self.unitResultLabel.SetLabelText("  "+str(round(result, 2)) + "     ")
     def setCurrResult(self, result):
-        self.curencyConvertLab = result
         if self.globalCalcReverse.GetValue() == False:
-            self.currencyResult.SetLabelText("  "+str(self.getSymbol())+""+str(round(self.currencyConvertLab, 2))+ "     ")
+            self.currencyResult.SetLabelText("  "+str(self.getSymbol())+""+str(round(result, 2))+ "     ")
         else:
-            self.curencyConvertLab = result
-            self.currencyResult.SetLabelText("  "+str(self.getDefault())+""+str(round(self.currencyConvertLab, 2))+ "     ")
+            self.currencyResult.SetLabelText("  "+str(self.getDefault())+""+str(round(result, 2))+ "     ")
     def convertMulti(self, a, b):
         return (b * a)
     def convertDivi(self, a, b):
@@ -187,10 +241,12 @@ class AppFrame(wx.Frame):
                 self.globalCount+=1
                 self.globalCountText.SetLabelText(self.CountText + str(self.globalCount) + "  ")
                 self.setCurrResult(self.convertMulti(self.getCurrencyFactor(), float(self.currencyInput.GetValue())))
+                print(self.convertMulti(self.getCurrencyFactor(), float(self.currencyInput.GetValue())))
             else:
                 self.globalCount+=1
                 self.globalCountText.SetLabelText(self.CountText + str(self.globalCount) + "  ")
                 self.setCurrResult(self.convertDivi(self.getCurrencyFactor(), float(self.currencyInput.GetValue())))
+                print(self.convertDivi(self.getCurrencyFactor(), float(self.currencyInput.GetValue())))
 
     def onUnitConvert(self, event):
         """Do something"""
@@ -206,7 +262,7 @@ class AppFrame(wx.Frame):
         else:
             self.currencyCalculation()
 
-    def OnAbout(self, event):
+    def onAbout(self, event):
         """Display an About Dialog"""
         wx.MessageBox("Simple Python program which allows the user to convert between different measurements",
                       "About this program",
@@ -217,6 +273,9 @@ class AppFrame(wx.Frame):
         wx.MessageBox("Cannot enter non-numeric items",
                       "ERROR",
                       wx.OK|wx.ICON_ERROR)
+        self.unitUserInputBox.Clear()
+        self.currencyInput.Clear()
+        
 
 #Main program loop
 def main():
