@@ -1,6 +1,5 @@
 import wx
 import io
-import itertools 
 
 class AppFrame(wx.Frame):
 
@@ -15,7 +14,7 @@ class AppFrame(wx.Frame):
         self.CreateStatusBar()
         self.SetStatusText("Welcome to my Python port of my Java application!")
         self.onInitialCurrencyLoad()
-        self.SetSize(900, 900)
+        self.SetSize(900, 750)
         self.mainPanel()
 
     def onInitialCurrencyLoad(self):
@@ -30,8 +29,7 @@ class AppFrame(wx.Frame):
             with io.open(self.filePath, 'r', encoding='utf-8-sig') as f:
                 self.contents = f.readlines()
 
-            self.contents = [x.strip('\t') for x in self.contents]
-            self.contents = [x.strip('\n') for x in self.contents] 
+            self.contents = [x.strip('\t \n') for x in self.contents]
             self.contents = [x.replace('\t','') for x in self.contents]
             self.contents = [x.replace(', ',',') for x in self.contents]
 
@@ -40,7 +38,7 @@ class AppFrame(wx.Frame):
                 self.currencyCombo.append(currName)
                 self.currencyFactors.append(float(currFactor))
                 self.currencySymbols.append(currSymbol)
-
+        
         except Exception as exception:
             print(exception)
 
@@ -52,7 +50,7 @@ class AppFrame(wx.Frame):
         self.outHSizer = wx.BoxSizer(wx.HORIZONTAL)
         self.outVSizer.AddStretchSpacer(1)
         self.outHSizer.AddStretchSpacer(1)
-        self.sizer = wx.FlexGridSizer(rows=3, cols=1, vgap=10, hgap=20)
+        self.sizer = wx.FlexGridSizer(rows=4, cols=1, vgap=10, hgap=20)
 
         #setting up various variables
         self.unitFactors = [2.54, 1.609344, 0.4535, 0.21997, 0.3048, 273.15, 0.404685642] 
@@ -102,15 +100,37 @@ class AppFrame(wx.Frame):
         self.currencyConversionSizer.Add(self.currConvertButton)
         self.sizer.Add(self.currencyConversionSizer, flag=wx.EXPAND)
 
+        # Creating various UI elements for the unit file-selection module
+        self.fileDirectorySelection = wx.StaticBox(self.mainPanel, wx.ID_ANY, "File/Directory Selection")
+        self.fileDirectoryButton = wx.Button(self.mainPanel, wx.ID_ANY, "Click to select a file/directory to inspect", size=(300,30))
+        self.choices = ['Inspect single file (default)','Inspect directory','Inspect directory meta-data']
+        self.fileSelectionChoices = wx.RadioBox(self.mainPanel, wx.ID_ANY, choices=self.choices, style=wx.RA_SPECIFY_ROWS)
+        self.writeToFile = wx.CheckBox(self.mainPanel, wx.ID_ANY, label='Output generated output to disk', style=wx.RA_SPECIFY_ROWS)
+        self.fileDirectorySizer = wx.StaticBoxSizer(self.fileDirectorySelection, wx.VERTICAL)
+        self.fileDirectorySizer.Add(self.fileDirectoryButton, flag=wx.ALIGN_CENTER)
+        self.fileDirectorySizer.Add(self.fileSelectionChoices, flag=wx.ALIGN_CENTER)
+        self.fileDirectorySizer.AddSpacer(10) 
+        self.fileDirectorySizer.Add(self.writeToFile, flag=wx.ALIGN_CENTER)
+        self.fileDirectorySizer.AddSpacer(10) 
+
+         #Adding stuff to the fileDirectorySizer boxSizer, which allows it to scale.
+        self.sizer.Add(self.fileDirectorySizer, flag=wx.ALIGN_LEFT)
+
+        # Creating various UI elements for the unit hash-algorithm picker module
+        self.algorithmSelection = wx.StaticBox(self.mainPanel, wx.ID_ANY, "Algorithms", pos=(340,163), size=(235,120))
+        self.algorithms = ['AddMultiHash Algorithm (default)','ShoftXORHash Algorithm','OATHash Algorithm']
+        self.algorithmChoices = wx.RadioBox(self.mainPanel, wx.ID_ANY, choices=self.algorithms, pos=(350,180), style=wx.RA_SPECIFY_ROWS)
+        self.algorithmSelectionSizer = wx.StaticBoxSizer(self.algorithmSelection, wx.VERTICAL)
+
         # Bind events to things
         self.Bind(wx.EVT_BUTTON, self.onCurrConvert, self.currConvertButton)
         self.Bind(wx.EVT_BUTTON, self.onUnitConvert, self.unitConvertButton)
         self.Bind(wx.EVT_BUTTON, self.onClear, self.clearThings)
 
         # Basically making sure it's responsive
-        self.outHSizer.Add(self.sizer, flag=wx.EXPAND, proportion=15)
+        self.outHSizer.Add(self.sizer, flag=wx.ALL, proportion=15)
         self.outHSizer.AddStretchSpacer(1)
-        self.outVSizer.Add(self.outHSizer, flag=wx.EXPAND, proportion=15)
+        self.outVSizer.Add(self.outHSizer, flag=wx.ALL, proportion=15)
         self.mainPanel.SetSizer(self.outVSizer)
 
                       
@@ -152,8 +172,7 @@ class AppFrame(wx.Frame):
             with io.open(self.filePath, 'r', encoding='utf-8-sig') as f:
                 self.contents = f.readlines()
 
-            self.contents = [x.strip('\t') for x in self.contents]
-            self.contents = [x.strip('\n') for x in self.contents] 
+            self.contents = [x.strip('\t \n') for x in self.contents]
             self.contents = [x.replace('\t','') for x in self.contents]
             self.contents = [x.replace(', ',',') for x in self.contents]
              
@@ -181,6 +200,8 @@ class AppFrame(wx.Frame):
                     self.currencySymbols.append(self.currSymbol)
                     self.currencyDrop.Clear()
                     self.currencyDrop.AppendItems(self.currencyCombo)
+                    self.measurementDrop.SetSelection(0)
+                    self.currencyDrop.SetSelection(0)
                     
 
         except Exception as exception:
