@@ -367,17 +367,34 @@ class AppFrame(wx.Frame):
 
             if self.returnAlgorithm() == 0:
                 self.algo.md5.produceFileHash(self, self.contents)
-                print(filename)
-                print(self.algo.md5.getHash(self)[0:128])
+                
+                if self.writeToFile.GetValue() == True:
+                    stringToWrite = directory+' : '+filename+' : '+str(self.returnUserChoice())+' : '+str(self.returnAlgorithm())+' : '+str(self.algo.md5.getHash(self)[0:128])
+                    self.writeLineToFile(stringToWrite)
+                else:
+                    stringToWrite = directory+' : '+filename+' : '+str(self.returnUserChoice())+' : '+str(self.returnAlgorithm())+' : '+str(self.algo.md5.getHash(self)[0:128])
+                    print(stringToWrite)
+
             elif self.returnAlgorithm() == 1:
                 self.algo.sha256.produceFileHash(self, self.contents)
-                print(filename)
-                print(self.algo.sha256.getHash(self)[0:256])
+               
+                if self.writeToFile.GetValue() == True:
+                    stringToWrite = directory+' : '+filename+' : '+str(self.returnUserChoice())+' : '+str(self.returnAlgorithm())+' : '+str(self.algo.sha256.getHash(self)[0:256])
+                    self.writeLineToFile(stringToWrite)
+                else:
+                    stringToWrite = directory+' : '+filename+' : '+str(self.returnUserChoice())+' : '+str(self.returnAlgorithm())+' : '+str(self.algo.sha256.getHash(self)[0:256])
+                    print(stringToWrite)
+
             elif self.returnAlgorithm()== 2:
                 self.algo.sha3_512.produceFileHash(self, self.contents)
-                print(filename)
-                print(self.algo.sha3_512.getHash(self)[0:512])
-    
+                
+                if self.writeToFile.GetValue() == True:
+                    stringToWrite = directory+' : '+filename+' : '+str(self.returnUserChoice())+' : '+str(self.returnAlgorithm())+' : '+str(self.algo.sha3_512.getHash(self)[0:512])
+                    self.writeLineToFile(stringToWrite)
+                else:
+                    stringToWrite = directory+' : '+filename+' : '+str(self.returnUserChoice())+' : '+str(self.returnAlgorithm())+' : '+str(self.algo.sha3_512.getHash(self)[0:512])
+                    print(stringToWrite)
+
     def multipleFiles(self, filename, directory):
         del filename
 
@@ -399,16 +416,33 @@ class AppFrame(wx.Frame):
 
                 if self.returnAlgorithm() == 0:
                     self.algo.md5.produceDirHash(self, self.contents)
-                    print(item.name)
-                    print(self.algo.md5.getHash(self)[0:128])
+                    
+                    if self.writeToFile.GetValue() == True:
+                        stringToWrite = directory+' : '+item.name+' : '+str(self.returnUserChoice())+' : '+str(self.returnAlgorithm())+' : '+str(self.algo.md5.getHash(self)[0:128])
+                        self.writeLineToFile(stringToWrite)
+                    else:
+                        stringToWrite = directory+' : '+item.name+' : '+str(self.returnUserChoice())+' : '+str(self.returnAlgorithm())+' : '+str(self.algo.md5.getHash(self)[0:128])
+                        print(stringToWrite)
+
                 elif self.returnAlgorithm() == 1:
                     self.algo.sha256.produceDirHash(self, self.contents)
-                    print(item.name)
-                    print(self.algo.sha256.getHash(self)[0:256])
+
+                    if self.writeToFile.GetValue() == True:
+                        stringToWrite = directory+' : '+item.name+' : '+str(self.returnUserChoice())+' : '+str(self.returnAlgorithm())+' : '+str(self.algo.sha256.getHash(self)[0:256])
+                        self.writeLineToFile(stringToWrite)
+                    else:
+                        stringToWrite = directory+' : '+item.name+' : '+str(self.returnUserChoice())+' : '+str(self.returnAlgorithm())+' : '+str(self.algo.sha256.getHash(self)[0:256])
+                        print(stringToWrite)
+
                 elif self.returnAlgorithm() == 2:
                     self.algo.sha3_512.produceDirHash(self, self.contents)
-                    print(item.name)
-                    print(self.algo.sha3_512.getHash(self)[0:512])
+                    
+                    if self.writeToFile.GetValue() == True:
+                        stringToWrite = directory+' : '+item.name+' : '+str(self.returnUserChoice())+' : '+str(self.returnAlgorithm())+' : '+str(self.algo.sha3_512.getHash(self)[0:512])
+                        self.writeLineToFile(stringToWrite)
+                    else:
+                        stringToWrite = directory+' : '+item.name+' : '+str(self.returnUserChoice())+' : '+str(self.returnAlgorithm())+' : '+str(self.algo.sha3_512.getHash(self)[0:512])
+                        print(stringToWrite)
 
     def multipleFilesMetaData(self, filename, directory):
         del filename
@@ -423,18 +457,48 @@ class AppFrame(wx.Frame):
 
             self.importedFile = os.stat(directory+"\\"+item.name)
 
-            if self.returnAlgorithm()== 0:
+            if self.returnAlgorithm() == 0:
                 self.algo.md5.produceDirMetaHash(self, self.importedFile.st_size)
-                print(item.name)
-                print(self.algo.md5.getHash(self)[0:128])
-            elif self.returnAlgorithm()== 1:
+
+                if self.writeToFile.GetValue() == True:
+                    stringToWrite = directory+' : '+item.name+' : '+str(self.returnUserChoice())+' : '+str(self.returnAlgorithm())+' : '+str(self.algo.md5.getHash(self)[0:128])
+                    self.writeLineToFile(stringToWrite)
+                else:
+                    stringToWrite = directory+' : '+item.name+' : '+str(self.returnUserChoice())+' : '+str(self.returnAlgorithm())+' : '+str(self.algo.md5.getHash(self)[0:128])
+                    print(stringToWrite)
+
+            elif self.returnAlgorithm() == 1:
                 self.algo.sha256.produceDirMetaHash(self, self.importedFile.st_size)
-                print(item.name)
-                print(self.algo.sha256.getHash(self)[0:256])
-            elif self.returnAlgorithm()== 2:
+
+                if self.writeToFile.GetValue() == True:
+                    stringToWrite = directory+' : '+item.name+' : '+str(self.returnUserChoice())+' : '+str(self.returnAlgorithm())+' : '+str(self.algo.sha256.getHash(self)[0:256])
+                    self.writeLineToFile(stringToWrite)
+                else:
+                    stringToWrite = directory+' : '+item.name+' : '+str(self.returnUserChoice())+' : '+str(self.returnAlgorithm())+' : '+str(self.algo.sha256.getHash(self)[0:256])
+                    print(stringToWrite)
+
+            elif self.returnAlgorithm() == 2:
                 self.algo.sha3_512.produceDirMetaHash(self, self.importedFile.st_size)
-                print(item.name)
-                print(self.algo.sha3_512.getHash(self)[0:512])
+
+                if self.writeToFile.GetValue() == True:
+                    stringToWrite = directory+' : '+item.name+' : '+str(self.returnUserChoice())+' : '+str(self.returnAlgorithm())+' : '+str(self.algo.sha3_512.getHash(self)[0:512])
+                    self.writeLineToFile(stringToWrite)
+                else:
+                    stringToWrite = directory+' : '+item.name+' : '+str(self.returnUserChoice())+' : '+str(self.returnAlgorithm())+' : '+str(self.algo.sha3_512.getHash(self)[0:512])
+                    print(stringToWrite)
+
+    def writeLineToFile(self, lineToWrite):
+        self.defaultPath = os.path.dirname(os.path.realpath(__file__))
+        self.defaultPath+='\\'
+        if os.path.isfile(self.defaultPath+"final.txt")  == False:
+            f = open(self.defaultPath+"final.txt","w+")
+            f.write(lineToWrite+'\n')
+            f.close()
+        else:
+            f = open(self.defaultPath+"final.txt","a")
+            f.write(lineToWrite+'\n')
+            f.close()
+
 
 class algorithmGeneration:
 
@@ -454,7 +518,6 @@ class algorithmGeneration:
                 self.m.update(str(b).encode('utf-8'))
                 self.hashString = self.m.hexdigest()
             
-
         def produceDirMetaHash(self, fileSize):
             self.m = hashlib.md5()
 
