@@ -8,12 +8,12 @@ class AppFrame(wx.Frame):
 
         # ensure the parent's __init__ is called
         super(AppFrame, self).__init__(*args, **kw)
+        self.onInitialCurrencyLoad()
         # create a menu bar
         self.makeMenuBar()
         # and a status bar
         self.CreateStatusBar()
         self.SetStatusText("Welcome to my Python port of my Java application!")
-        self.onInitialCurrencyLoad()
         self.SetSize(900, 750)
         self.mainPanel()
 
@@ -31,7 +31,6 @@ class AppFrame(wx.Frame):
                 self.contents = f.readlines()
 
             self.contents = [x.strip('\t \n') for x in self.contents]
-            self.contents = [x.replace('\t', '') for x in self.contents]
             self.contents = [x.replace(', ', ',') for x in self.contents]
 
             for i in self.contents:
@@ -142,6 +141,7 @@ class AppFrame(wx.Frame):
         fileMenu = wx.Menu()
         exitItem = fileMenu.Append(wx.ID_EXIT)
         loadCurrency = fileMenu.Append(wx.ID_OPEN, '&Load Currency File..')
+        loadFileOrDirectory = fileMenu.Append(wx.ID_OPEN, '&Load File or Directory...')
         helpMenu = wx.Menu()
         aboutItem = helpMenu.Append(wx.ID_ABOUT)
         menuBar = wx.MenuBar()
@@ -151,6 +151,7 @@ class AppFrame(wx.Frame):
         self.Bind(wx.EVT_MENU, self.onExit,  exitItem)
         self.Bind(wx.EVT_MENU, self.onAbout, aboutItem)
         self.Bind(wx.EVT_MENU, self.onLoadCurrency, loadCurrency)
+        self.Bind(wx.EVT_MENU, self.loadFileorDirectory, loadFileOrDirectory)
 
     def onExit(self, event):
         """Close the frame, terminating the application."""
@@ -160,18 +161,15 @@ class AppFrame(wx.Frame):
         self.defaultPath = os.path.dirname(os.path.realpath(__file__))
         self.openFileDialog = wx.FileDialog(self, "Open a currency file...", self.defaultPath, "","", wx.FD_OPEN | wx.FD_FILE_MUST_EXIST)
         self.openFileDialog.ShowModal()
-        self.filePath = self.openFileDialog.GetPath()
-        self.fileParent = self.openFileDialog.GetDirectory()
-        self.fileName = self.openFileDialog.GetFilename()
 
         try:
-            
-            self.pathChoice = self.returnUserChoice()
 
-            if self.pathChoice == 0:
-                self.accessFile(self.fileName, self.filePath)
-            else:
-                self.accessFile(self.fileName, self.fileParent)
+            if self.returnUserChoice() == 0:
+                self.singleFile(self.openFileDialog.GetFilename(),  self.openFileDialog.GetPath())
+            elif self.returnUserChoice() == 1:
+                self.multipleFiles(self.openFileDialog.GetFilename(), self.openFileDialog.GetDirectory())
+            elif self.returnUserChoice() == 2:
+                self.multipleFilesMetaData(self.openFileDialog.GetFilename(), self.openFileDialog.GetDirectory())
 
         except Exception as excepti:
             print(excepti)
@@ -180,7 +178,6 @@ class AppFrame(wx.Frame):
         self.defaultPath = os.path.dirname(os.path.realpath(__file__))
         self.openFileDialog = wx.FileDialog(self, "Open and scan a file...", self.defaultPath , "","Text files (*.txt)|*.txt", wx.FD_OPEN | wx.FD_FILE_MUST_EXIST)
         self.openFileDialog.ShowModal()
-        self.filePath = self.openFileDialog.GetPath()
 
         try:
             self.currencyCombo.clear()
@@ -191,7 +188,7 @@ class AppFrame(wx.Frame):
             self.currFactor = ""
             self.currSymbol = ""
 
-            with open(self.filePath, 'r', encoding='utf-8-sig') as f:
+            with open(self.openFileDialog.GetPath(), 'r', encoding='utf-8-sig') as f:
                 self.contents = f.readlines()
 
             self.contents = [x.strip('\t \n') for x in self.contents]
@@ -277,19 +274,8 @@ class AppFrame(wx.Frame):
 
     def unitCalculation(self):
 
-        self.n = self.measurementDrop.GetSelection()
-
-        if self.n in (0, 1, 2, 4, 6):
-            if self.globalCalcReverse.GetValue() == False:
-                self.globalCount += 1
-                self.globalCountText.SetLabelText(self.CountText + str(self.globalCount) + "  ")
-                self.setUnitResult(self.convertMulti(self.getUnitFactor(), int(self.unitUserInputBox.GetValue())))
-            else:
-                self.globalCount += 1
-                self.globalCountText.SetLabelText(self.CountText + str(self.globalCount) + "  ")
-                self.setUnitResult(self.convertDivi(self.getUnitFactor(), int(self.unitUserInputBox.GetValue())))
-        elif self.n == 3:
-            if self.globalCalcReverse.GetValue() == False:
+        if self.measurementDrop.GetSelection() in (0, 1, 2, 4, 6):
+            if self.globalCalcReverse.GetValue():
                 self.globalCount += 1
                 self.globalCountText.SetLabelText(self.CountText + str(self.globalCount) + "  ")
                 self.setUnitResult(self.convertDivi(self.getUnitFactor(), int(self.unitUserInputBox.GetValue())))
@@ -297,31 +283,39 @@ class AppFrame(wx.Frame):
                 self.globalCount += 1
                 self.globalCountText.SetLabelText(self.CountText + str(self.globalCount) + "  ")
                 self.setUnitResult(self.convertMulti(self.getUnitFactor(), int(self.unitUserInputBox.GetValue())))
-        elif self.n == 5:
-            if self.globalCalcReverse.GetValue() == False:
+        elif self.measurementDrop.GetSelection() == 3:
+            if self.globalCalcReverse.GetValue():
                 self.globalCount += 1
                 self.globalCountText.SetLabelText(self.CountText + str(self.globalCount) + "  ")
-                self.setUnitResult(self.convertPlus(self.getUnitFactor(), int(self.unitUserInputBox.GetValue())))
+                self.setUnitResult(self.convertMulti(self.getUnitFactor(), int(self.unitUserInputBox.GetValue())))
             else:
+                self.globalCount += 1
+                self.globalCountText.SetLabelText(self.CountText + str(self.globalCount) + "  ")
+                self.setUnitResult(self.convertDivi(self.getUnitFactor(), int(self.unitUserInputBox.GetValue())))
+        elif self.measurementDrop.GetSelection() == 5:
+            if self.globalCalcReverse.GetValue():
                 self.globalCount += 1
                 self.globalCountText.SetLabelText(self.CountText + str(self.globalCount) + "  ")
                 self.setUnitResult(self.convertNeg(self.getUnitFactor(), int(self.unitUserInputBox.GetValue())))
+            else:
+                self.globalCount += 1
+                self.globalCountText.SetLabelText(self.CountText + str(self.globalCount) + "  ")
+                self.setUnitResult(self.convertPlus(self.getUnitFactor(), int(self.unitUserInputBox.GetValue())))
 
     def currencyCalculation(self):
 
-        self.bn = self.currencyDrop.GetSelection()
         self.r = range(0, len(self.currencyFactors))
 
-        if self.bn in self.r:
-            if self.globalCalcReverse.GetValue() == False:
+        if self.currencyDrop.GetSelection() in self.r:
+            if self.globalCalcReverse.GetValue():
+                self.globalCount += 1
+                self.globalCountText.SetLabelText(self.CountText + str(self.globalCount) + "  ")
+                self.setCurrResult(self.convertDivi(self.getCurrencyFactor(), float(self.currencyInput.GetValue())))
+            else:
                 self.globalCount += 1
                 self.globalCountText.SetLabelText(
                 self.CountText + str(self.globalCount) + "  ")
                 self.setCurrResult(self.convertMulti(self.getCurrencyFactor(), float(self.currencyInput.GetValue())))
-            else:
-                self.globalCount += 1
-                self.globalCountText.SetLabelText(self.CountText + str(self.globalCount) + "  ")
-                self.setCurrResult(self.convertDivi(self.getCurrencyFactor(), float(self.currencyInput.GetValue())))
 
     def onUnitConvert(self, event):
         """Do something"""
@@ -351,16 +345,6 @@ class AppFrame(wx.Frame):
         self.unitUserInputBox.Clear()
         self.currencyInput.Clear()
 
-    def accessFile(self, name, directory):
-        self.choice = self.returnUserChoice()
-
-        if self.choice == 0:
-            self.singleFile(name, directory)
-        elif self.choice == 1:
-            self.multipleFiles(name, directory)
-        elif self.choice == 2:
-            self.multipleFilesMetaData(name, directory)
-        
     def returnAlgorithm(self):
         return self.algorithmChoices.GetSelection()
 
@@ -368,37 +352,34 @@ class AppFrame(wx.Frame):
         return self.fileSelectionChoices.GetSelection()
 
     def singleFile(self, filename, directory):
-        self.importedFile = os.stat(directory)
-        self.fileSize =  self.importedFile.st_atime
-        self.importedFilePath = directory
-        self.fileName = filename
+        
         self.algo = algorithmGeneration()
 
         print('-------------------------------------')
 
         try:
-            with open(self.importedFilePath, 'r') as f:
+            with open(directory, 'r') as f:
                 self.contents = f.readlines()
                 self.contents = [x.strip('\t \n') for x in self.contents]
         except Exception as ex:
             print(ex)
         else:
-            self.algoChoice = self.returnAlgorithm()
 
-            if self.algoChoice == 0:
+            if self.returnAlgorithm() == 0:
                 self.algo.md5.produceFileHash(self, self.contents)
-                print(self.fileName)
+                print(filename)
                 print(self.algo.md5.getHash(self)[0:128])
-            elif self.algoChoice == 1:
+            elif self.returnAlgorithm() == 1:
                 self.algo.sha256.produceFileHash(self, self.contents)
-                print(self.fileName)
+                print(filename)
                 print(self.algo.sha256.getHash(self)[0:256])
-            elif self.algoChoice == 2:
+            elif self.returnAlgorithm()== 2:
                 self.algo.sha3_512.produceFileHash(self, self.contents)
-                print(self.fileName)
+                print(filename)
                 print(self.algo.sha3_512.getHash(self)[0:512])
     
     def multipleFiles(self, filename, directory):
+        del filename
 
         self.algo = algorithmGeneration()
 
@@ -408,30 +389,29 @@ class AppFrame(wx.Frame):
         basepath = Path(directory)
         files_in_basepath = (entry for entry in basepath.iterdir() if entry.is_file())
         for item in files_in_basepath:
-            self.fileName = item.name
             try:
-                with open(directory+"\\"+self.fileName, 'r') as f:
+                with open(directory+"\\"+item.name, 'r') as f:
                     self.contents = f.readlines()
                     self.contents = [x.strip('\t \n') for x in self.contents]
             except Exception as exceptio:
                 continue
             finally:
-                self.algoChoice = self.returnAlgorithm()
 
-                if self.algoChoice == 0:
+                if self.returnAlgorithm() == 0:
                     self.algo.md5.produceDirHash(self, self.contents)
-                    print(self.fileName)
+                    print(item.name)
                     print(self.algo.md5.getHash(self)[0:128])
-                elif self.algoChoice == 1:
+                elif self.returnAlgorithm() == 1:
                     self.algo.sha256.produceDirHash(self, self.contents)
-                    print(self.fileName)
+                    print(item.name)
                     print(self.algo.sha256.getHash(self)[0:256])
-                elif self.algoChoice == 2:
+                elif self.returnAlgorithm() == 2:
                     self.algo.sha3_512.produceDirHash(self, self.contents)
-                    print(self.fileName)
+                    print(item.name)
                     print(self.algo.sha3_512.getHash(self)[0:512])
 
     def multipleFilesMetaData(self, filename, directory):
+        del filename
 
         self.algo = algorithmGeneration()
 
@@ -440,31 +420,27 @@ class AppFrame(wx.Frame):
         basepath = Path(directory)
         files_in_basepath = (entry for entry in basepath.iterdir() if entry.is_file())
         for item in files_in_basepath:
-            self.fileName = item.name
-            self.importedFile = os.stat(directory+"\\"+self.fileName)
-            self.fileSize = self.importedFile.st_size
-            self.algoChoice = self.returnAlgorithm()
 
-            if self.algoChoice == 0:
-                self.algo.md5.produceDirMetaHash(self, self.fileSize)
-                print(self.fileName)
+            self.importedFile = os.stat(directory+"\\"+item.name)
+
+            if self.returnAlgorithm()== 0:
+                self.algo.md5.produceDirMetaHash(self, self.importedFile.st_size)
+                print(item.name)
                 print(self.algo.md5.getHash(self)[0:128])
-            elif self.algoChoice == 1:
-                self.algo.sha256.produceDirMetaHash(self, self.fileSize)
-                print(self.fileName)
+            elif self.returnAlgorithm()== 1:
+                self.algo.sha256.produceDirMetaHash(self, self.importedFile.st_size)
+                print(item.name)
                 print(self.algo.sha256.getHash(self)[0:256])
-            elif self.algoChoice == 2:
-                self.algo.sha3_512.produceDirMetaHash(self, self.fileSize)
-                print(self.fileName)
+            elif self.returnAlgorithm()== 2:
+                self.algo.sha3_512.produceDirMetaHash(self, self.importedFile.st_size)
+                print(item.name)
                 print(self.algo.sha3_512.getHash(self)[0:512])
 
 class algorithmGeneration:
 
     class md5:
         
-
         def produceFileHash(self, byte):
-            
             self.m = hashlib.md5()
             
             for b in byte:
@@ -472,7 +448,6 @@ class algorithmGeneration:
                 self.hashString = self.m.hexdigest()
 
         def produceDirHash(self, byte):
-            
             self.m = hashlib.md5()
 
             for b in byte:
@@ -481,7 +456,6 @@ class algorithmGeneration:
             
 
         def produceDirMetaHash(self, fileSize):
-
             self.m = hashlib.md5()
 
             self.m.update(str(fileSize).encode('utf-8'))
