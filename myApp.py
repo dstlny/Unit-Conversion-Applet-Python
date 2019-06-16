@@ -1,4 +1,5 @@
 import wx,  os, hashlib, pathlib, glob  
+from pathlib import Path
 
 class AppFrame(wx.Frame):
 
@@ -17,7 +18,8 @@ class AppFrame(wx.Frame):
         self.mainPanel()
 
     def onInitialCurrencyLoad(self):
-        self.filePath = "C:\\Users\\Luke\\Documents\\GitHub\\Java-Projects-Combined\\src\\currency.txt"
+        self.filePath = os.path.dirname(os.path.realpath(__file__))
+        self.filePath+='\\currency.txt'
 
         try:
             self.currencyCombo = []
@@ -175,7 +177,8 @@ class AppFrame(wx.Frame):
             print(excepti)
 
     def onLoadCurrency(self, event):
-        self.openFileDialog = wx.FileDialog(self, "Open a currency file...", "", "","Text files (*.txt)|*.txt", wx.FD_OPEN | wx.FD_FILE_MUST_EXIST)
+        self.defaultPath = os.path.dirname(os.path.realpath(__file__))
+        self.openFileDialog = wx.FileDialog(self, "Open and scan a file...", self.defaultPath , "","Text files (*.txt)|*.txt", wx.FD_OPEN | wx.FD_FILE_MUST_EXIST)
         self.openFileDialog.ShowModal()
         self.filePath = self.openFileDialog.GetPath()
 
@@ -399,63 +402,61 @@ class AppFrame(wx.Frame):
 
         self.algo = algorithmGeneration()
 
-        x = [i[2] for i in os.walk(directory)]
-
         print('-------------------------------------')
 
-        for t in x:
-            for names in t:
-                self.fileName = names
-                try:
-                    with open(directory+r"\\"+names, 'r') as f:
-                        self.contents = f.readlines()
-                        self.contents = [x.strip('\t \n') for x in self.contents]
-                except Exception as exceptio:
-                    print(exceptio)
-                    continue
-                finally:
-                    self.algoChoice = self.returnAlgorithm()
+        # List all files in directory using pathlib
+        basepath = Path(directory)
+        files_in_basepath = (entry for entry in basepath.iterdir() if entry.is_file())
+        for item in files_in_basepath:
+            self.fileName = item.name
+            try:
+                with open(directory+"\\"+self.fileName, 'r') as f:
+                    self.contents = f.readlines()
+                    self.contents = [x.strip('\t \n') for x in self.contents]
+            except Exception as exceptio:
+                continue
+            finally:
+                self.algoChoice = self.returnAlgorithm()
 
-                    if self.algoChoice == 0:
-                        self.algo.md5.produceDirHash(self, self.contents)
-                        print(self.fileName)
-                        print(self.algo.md5.getHash(self)[0:128])
-                    elif self.algoChoice == 1:
-                        self.algo.sha256.produceDirHash(self, self.contents)
-                        print(self.fileName)
-                        print(self.algo.sha256.getHash(self)[0:256])
-                    elif self.algoChoice == 2:
-                        self.algo.sha3_512.produceDirHash(self, self.contents)
-                        print(self.fileName)
-                        print(self.algo.sha3_512.getHash(self)[0:512])
+                if self.algoChoice == 0:
+                    self.algo.md5.produceDirHash(self, self.contents)
+                    print(self.fileName)
+                    print(self.algo.md5.getHash(self)[0:128])
+                elif self.algoChoice == 1:
+                    self.algo.sha256.produceDirHash(self, self.contents)
+                    print(self.fileName)
+                    print(self.algo.sha256.getHash(self)[0:256])
+                elif self.algoChoice == 2:
+                    self.algo.sha3_512.produceDirHash(self, self.contents)
+                    print(self.fileName)
+                    print(self.algo.sha3_512.getHash(self)[0:512])
 
     def multipleFilesMetaData(self, filename, directory):
 
         self.algo = algorithmGeneration()
 
-        x = [i[2] for i in os.walk(directory)]
-
         print('-------------------------------------')
 
-        for t in x:
-            for names in t:
-                self.fileName = names
-                self.importedFile = os.stat(directory+r"\\"+names)
-                self.fileSize = self.importedFile.st_size
-                self.algoChoice = self.returnAlgorithm()
+        basepath = Path(directory)
+        files_in_basepath = (entry for entry in basepath.iterdir() if entry.is_file())
+        for item in files_in_basepath:
+            self.fileName = item.name
+            self.importedFile = os.stat(directory+"\\"+self.fileName)
+            self.fileSize = self.importedFile.st_size
+            self.algoChoice = self.returnAlgorithm()
 
-                if self.algoChoice == 0:
-                    self.algo.md5.produceDirMetaHash(self, self.fileSize)
-                    print(self.fileName)
-                    print(self.algo.md5.getHash(self)[0:128])
-                elif self.algoChoice == 1:
-                    self.algo.sha256.produceDirMetaHash(self, self.fileSize)
-                    print(self.fileName)
-                    print(self.algo.sha256.getHash(self)[0:256])
-                elif self.algoChoice == 2:
-                    self.algo.sha3_512.produceDirMetaHash(self, self.fileSize)
-                    print(self.fileName)
-                    print(self.algo.sha3_512.getHash(self)[0:512])
+            if self.algoChoice == 0:
+                self.algo.md5.produceDirMetaHash(self, self.fileSize)
+                print(self.fileName)
+                print(self.algo.md5.getHash(self)[0:128])
+            elif self.algoChoice == 1:
+                self.algo.sha256.produceDirMetaHash(self, self.fileSize)
+                print(self.fileName)
+                print(self.algo.sha256.getHash(self)[0:256])
+            elif self.algoChoice == 2:
+                self.algo.sha3_512.produceDirMetaHash(self, self.fileSize)
+                print(self.fileName)
+                print(self.algo.sha3_512.getHash(self)[0:512])
 
 class algorithmGeneration:
 
