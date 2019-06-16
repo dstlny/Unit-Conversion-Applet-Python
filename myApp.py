@@ -34,7 +34,7 @@ class AppFrame(wx.Frame):
 
             for i in self.contents:
                 currName, currFactor, currSymbol = i.split(',')
-                self.currencyCombo.append(currName)
+                self.currencyCombo.append('British Pounds (GBP) to ' + currName)
                 self.currencyFactors.append(float(currFactor))
                 self.currencySymbols.append(currSymbol)
 
@@ -117,8 +117,8 @@ class AppFrame(wx.Frame):
         self.sizer.Add(self.fileDirectorySizer, flag=wx.ALIGN_LEFT)
 
         # Creating various UI elements for the unit hash-algorithm picker module
-        self.algorithmSelection = wx.StaticBox(self.mainPanel, wx.ID_ANY, "Algorithms", pos=(340, 163), size=(235, 120))
-        self.algorithms = ['AddMultiHash Algorithm (default)', 'ShoftXORHash Algorithm', 'OATHash Algorithm']
+        self.algorithmSelection = wx.StaticBox(self.mainPanel, wx.ID_ANY, "Algorithms", pos=(340, 163), size=(242, 115))
+        self.algorithms = ['Message Digest 5, 128-bit', 'Secure Haashing Algorithm, 256-bit', 'Secure Hashing Algorithm 3, 512-bit']
         self.algorithmChoices = wx.RadioBox(self.mainPanel, wx.ID_ANY, choices=self.algorithms, pos=(350, 180), style=wx.RA_SPECIFY_ROWS)
         self.algorithmSelectionSizer = wx.StaticBoxSizer(self.algorithmSelection, wx.VERTICAL)
 
@@ -214,7 +214,7 @@ class AppFrame(wx.Frame):
                     continue
 
                 else:
-                    self.currencyCombo.append(self.currName)
+                    self.currencyCombo.append('British Pounds (GBP) to ' + self.currName)
                     self.currencyFactors.append(self.currFactor)
                     self.currencySymbols.append(self.currSymbol)
                     self.currencyDrop.Clear()
@@ -371,6 +371,8 @@ class AppFrame(wx.Frame):
         self.fileName = filename
         self.algo = algorithmGeneration()
 
+        print('-------------------------------------')
+
         try:
             with open(self.importedFilePath, 'r') as f:
                 self.contents = f.readlines()
@@ -382,12 +384,16 @@ class AppFrame(wx.Frame):
 
             if self.algoChoice == 0:
                 self.algo.md5.produceFileHash(self, self.contents)
-                print(self.algo.md5.getHash(self)[0:30])
+                print(self.fileName)
+                print(self.algo.md5.getHash(self)[0:128])
             elif self.algoChoice == 1:
                 self.algo.sha256.produceFileHash(self, self.contents)
-                print(self.algo.sha256.getHash(self)[0:30])
-            '''elif self.algoChoice == 1:
-                self.algo.OATHash.produceFileHash(self, fileContent, self.fileSize, 214748357)'''
+                print(self.fileName)
+                print(self.algo.sha256.getHash(self)[0:256])
+            elif self.algoChoice == 2:
+                self.algo.sha3_512.produceFileHash(self, self.contents)
+                print(self.fileName)
+                print(self.algo.sha3_512.getHash(self)[0:512])
     
     def multipleFiles(self, filename, directory):
 
@@ -399,6 +405,7 @@ class AppFrame(wx.Frame):
 
         for t in x:
             for names in t:
+                self.fileName = names
                 try:
                     with open(directory+r"\\"+names, 'r') as f:
                         self.contents = f.readlines()
@@ -411,10 +418,16 @@ class AppFrame(wx.Frame):
 
                     if self.algoChoice == 0:
                         self.algo.md5.produceDirHash(self, self.contents)
-                        print(self.algo.md5.getHash(self)[0:30])
+                        print(self.fileName)
+                        print(self.algo.md5.getHash(self)[0:128])
                     elif self.algoChoice == 1:
                         self.algo.sha256.produceDirHash(self, self.contents)
-                        print(self.algo.sha256.getHash(self)[0:30])
+                        print(self.fileName)
+                        print(self.algo.sha256.getHash(self)[0:256])
+                    elif self.algoChoice == 2:
+                        self.algo.sha3_512.produceDirHash(self, self.contents)
+                        print(self.fileName)
+                        print(self.algo.sha3_512.getHash(self)[0:512])
 
     def multipleFilesMetaData(self, filename, directory):
 
@@ -426,16 +439,23 @@ class AppFrame(wx.Frame):
 
         for t in x:
             for names in t:
+                self.fileName = names
                 self.importedFile = os.stat(directory+r"\\"+names)
                 self.fileSize = self.importedFile.st_size
                 self.algoChoice = self.returnAlgorithm()
 
                 if self.algoChoice == 0:
                     self.algo.md5.produceDirMetaHash(self, self.fileSize)
-                    print(self.algo.md5.getHash(self)[0:30])
+                    print(self.fileName)
+                    print(self.algo.md5.getHash(self)[0:128])
                 elif self.algoChoice == 1:
                     self.algo.sha256.produceDirMetaHash(self, self.fileSize)
-                    print(self.algo.sha256.getHash(self)[0:30])
+                    print(self.fileName)
+                    print(self.algo.sha256.getHash(self)[0:256])
+                elif self.algoChoice == 2:
+                    self.algo.sha3_512.produceDirMetaHash(self, self.fileSize)
+                    print(self.fileName)
+                    print(self.algo.sha3_512.getHash(self)[0:512])
 
 class algorithmGeneration:
 
@@ -494,49 +514,30 @@ class algorithmGeneration:
         def getHash(self):
             return self.hashString
 
-    '''class OATHash:
+    class sha3_512:
 
-        def produceFileHash(self, byte, fileSize, multiple):
+        def produceFileHash(self, byte):
+            self.m = hashlib.sha3_512()
+            
             for b in byte:
-                self.hashString ^= b
-                self.hashString ^= fileSize
-                self.hashString ^= multiple
-                self.hashString ^= (self.hash << 10)
-                self.hashString ^= (self.hash << fileSize << 10)
-                self.hashString ^= (self.hash << fileSize << multiple << 10)
-                self.hashString ^= (self.hash >> 6)
-                self.hashString ^= (self.hash >> fileSize >> 6)
-                self.hashString ^= (self.hash >> multiple >> fileSize >> 6)
+                self.m.update(str(b).encode('utf-8'))
+                self.hashString = self.m.hexdigest()
 
-        def produceDirHash(self, byte, fileSize, multiple, lastModified):
+        def produceDirHash(self, byte):
+            self.m = hashlib.sha3_512()
+            
             for b in byte:
-                self.hashString ^= b
-                self.hashString ^= fileSize
-                self.hashString ^= multiple
-                self.hashString ^= (self.hashString << 10)
-                self.hashString ^= (self.hashString << fileSize << 10)
-                self.hashString ^= (self.hashString << fileSize << multiple << 10)
-                self.hashString ^= (self.hashString << fileSize << multiple << lastModified << 10)
-                self.hashString ^= (self.hashString >> 6)
-                self.hashString ^= (self.hashString >> fileSize >> 6)
-                self.hashString ^= (self.hashString >> multiple >> fileSize >> 6)
-                self.hashString ^= (self.hashString >> lastModified >> multiple >> fileSize >> 6)
+                self.m.update(str(b).encode('utf-8'))
+                self.hashString = self.m.hexdigest()
 
-        def produceDirMetaHash(self, fileSize, multiple, lastModified):
-                self.hashString ^= fileSize
-                self.hashString ^= multiple
-                self.hashString ^= lastModified
-                self.hashString ^= (self.hashString << 10)
-                self.hashString ^= (self.hashString << fileSize << 10)
-                self.hashString ^= (self.hashString << fileSize << multiple << 10)
-                self.hashString ^= (self.hashString << fileSize << multiple << lastModified << 10)
-                self.hashString ^= (self.hashString >> 6)
-                self.hashString ^= (self.hashString >> fileSize >> 6)
-                self.hashString ^= (self.hashString >> fileSize  >> multiple >> 6)
-                self.hashString ^= (self.hashString >> fileSize >> multiple >> lastModified >> 6)
+        def produceDirMetaHash(self, fileSize):
+            self.m = hashlib.sha3_512()
+
+            self.m.update(str(fileSize).encode('utf-8'))
+            self.hashString = self.m.hexdigest()
 
         def getHash(self):
-            return self.hashString'''
+            return self.hashString
 
 
 # Main program loop
@@ -546,7 +547,6 @@ def main():
     frm = AppFrame(None, title='Python port of Java Application')
     frm.Show()
     app.MainLoop()
-
 
 # Main main, but it's ugly, thus the redirect
 if __name__ == '__main__':
