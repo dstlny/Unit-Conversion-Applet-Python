@@ -1,9 +1,4 @@
-import wx
-import io
-import os
-import hashlib
-import pathlib
-import glob  
+import wx,  os, hashlib, pathlib, glob  
 
 class AppFrame(wx.Frame):
 
@@ -30,7 +25,7 @@ class AppFrame(wx.Frame):
             self.currencySymbols = []
             self.contents = []
 
-            with io.open(self.filePath, 'r', encoding='utf-8-sig') as f:
+            with open(self.filePath, 'r', encoding='utf-8-sig') as f:
                 self.contents = f.readlines()
 
             self.contents = [x.strip('\t \n') for x in self.contents]
@@ -160,14 +155,12 @@ class AppFrame(wx.Frame):
         self.Close(True)
 
     def loadFileorDirectory(self, event):
-        self.openFileDialog = wx.FileDialog(self, "Open a currency file...", "", "","", wx.FD_OPEN | wx.FD_FILE_MUST_EXIST)
+        self.defaultPath = os.path.dirname(os.path.realpath(__file__))
+        self.openFileDialog = wx.FileDialog(self, "Open a currency file...", self.defaultPath, "","", wx.FD_OPEN | wx.FD_FILE_MUST_EXIST)
         self.openFileDialog.ShowModal()
         self.filePath = self.openFileDialog.GetPath()
         self.fileParent = self.openFileDialog.GetDirectory()
         self.fileName = self.openFileDialog.GetFilename()
-        print('loadFileorDirectory')
-        print(self.filePath)
-        print(self.fileName)
 
         try:
             
@@ -195,7 +188,7 @@ class AppFrame(wx.Frame):
             self.currFactor = ""
             self.currSymbol = ""
 
-            with io.open(self.filePath, 'r', encoding='utf-8-sig') as f:
+            with open(self.filePath, 'r', encoding='utf-8-sig') as f:
                 self.contents = f.readlines()
 
             self.contents = [x.strip('\t \n') for x in self.contents]
@@ -363,18 +356,13 @@ class AppFrame(wx.Frame):
         elif self.choice == 1:
             self.multipleFiles(name, directory)
         elif self.choice == 2:
-            self.singleFile(name, directory)
+            self.multipleFilesMetaData(name, directory)
         
     def returnAlgorithm(self):
         return self.algorithmChoices.GetSelection()
 
     def returnUserChoice(self):
         return self.fileSelectionChoices.GetSelection()
-
-    def get_lines_from_file(self, filename):
-        with io.open(filename, 'r', encoding='utf-8-sig') as f:
-                self.contents = f.readlines()
-        return self.contents
 
     def singleFile(self, filename, directory):
         self.importedFile = os.stat(directory)
@@ -384,34 +372,71 @@ class AppFrame(wx.Frame):
         self.algo = algorithmGeneration()
 
         try:
-            fileContent = self.get_lines_from_file(self.importedFilePath)
-            fileContent = [x.strip('\t \n') for x in fileContent]
-            fileContent = [x.replace('\t', '') for x in fileContent]
-            fileContent = [x.replace(', ', ',') for x in fileContent]
-            print(fileContent)
+            with open(self.importedFilePath, 'r') as f:
+                self.contents = f.readlines()
+                self.contents = [x.strip('\t \n') for x in self.contents]
         except Exception as ex:
             print(ex)
         else:
             self.algoChoice = self.returnAlgorithm()
 
             if self.algoChoice == 0:
-                self.algo.md5.produceFileHash(self, fileContent)
-                print(self.algo.md5.getHash(self))
+                self.algo.md5.produceFileHash(self, self.contents)
+                print(self.algo.md5.getHash(self)[0:30])
             elif self.algoChoice == 1:
-                self.algo.sha256.produceFileHash(self, fileContent)
-                print(self.algo.sha256.getHash(self))
+                self.algo.sha256.produceFileHash(self, self.contents)
+                print(self.algo.sha256.getHash(self)[0:30])
             '''elif self.algoChoice == 1:
                 self.algo.OATHash.produceFileHash(self, fileContent, self.fileSize, 214748357)'''
     
     def multipleFiles(self, filename, directory):
 
-        files=glob.glob(directory)
+        self.algo = algorithmGeneration()
 
-        for files_names in files:     
-            with io.open(files_names, 'r', encoding='utf-8') as f:
-                self.contents = f.readlines()
-                print(self.contents)
-                
+        x = [i[2] for i in os.walk(directory)]
+
+        print('-------------------------------------')
+
+        for t in x:
+            for names in t:
+                try:
+                    with open(directory+r"\\"+names, 'r') as f:
+                        self.contents = f.readlines()
+                        self.contents = [x.strip('\t \n') for x in self.contents]
+                except Exception as exceptio:
+                    print(exceptio)
+                    continue
+                finally:
+                    self.algoChoice = self.returnAlgorithm()
+
+                    if self.algoChoice == 0:
+                        self.algo.md5.produceDirHash(self, self.contents)
+                        print(self.algo.md5.getHash(self)[0:30])
+                    elif self.algoChoice == 1:
+                        self.algo.sha256.produceDirHash(self, self.contents)
+                        print(self.algo.sha256.getHash(self)[0:30])
+
+    def multipleFilesMetaData(self, filename, directory):
+
+        self.algo = algorithmGeneration()
+
+        x = [i[2] for i in os.walk(directory)]
+
+        print('-------------------------------------')
+
+        for t in x:
+            for names in t:
+                self.importedFile = os.stat(directory+r"\\"+names)
+                self.fileSize = self.importedFile.st_size
+                self.algoChoice = self.returnAlgorithm()
+
+                if self.algoChoice == 0:
+                    self.algo.md5.produceDirMetaHash(self, self.fileSize)
+                    print(self.algo.md5.getHash(self)[0:30])
+                elif self.algoChoice == 1:
+                    self.algo.sha256.produceDirMetaHash(self, self.fileSize)
+                    print(self.algo.sha256.getHash(self)[0:30])
+
 class algorithmGeneration:
 
     class md5:
@@ -423,7 +448,7 @@ class algorithmGeneration:
             
             for b in byte:
                 self.m.update(str(b).encode('utf-8'))
-                self.hashString += self.m.hexdigest()
+                self.hashString = self.m.hexdigest()
 
         def produceDirHash(self, byte):
             
@@ -431,20 +456,15 @@ class algorithmGeneration:
 
             for b in byte:
                 self.m.update(str(b).encode('utf-8'))
-                self.hashString += self.m.hexdigest()
+                self.hashString = self.m.hexdigest()
             
 
-        def produceDirMetaHash(self, fileSize, multiple, lastModified):
+        def produceDirMetaHash(self, fileSize):
 
             self.m = hashlib.md5()
 
-            for i in len(fileSize):
-                self.m.update(str(lastModified).encode('utf-8'))
-                self.hashString += self.m.hexdigest()
-                self.m.update(str(fileSize).encode('utf-8'))
-                self.hashString += self.m.hexdigest()
-                self.m.update(str(multiple).encode('utf-8'))
-                self.hashString += self.m.hexdigest()
+            self.m.update(str(fileSize).encode('utf-8'))
+            self.hashString = self.m.hexdigest()
 
         def getHash(self):
             return self.hashString
@@ -456,25 +476,20 @@ class algorithmGeneration:
             
             for b in byte:
                 self.m.update(str(b).encode('utf-8'))
-                self.hashString += self.m.hexdigest()
+                self.hashString = self.m.hexdigest()
 
         def produceDirHash(self, byte):
             self.m = hashlib.sha256()
             
             for b in byte:
                 self.m.update(str(b).encode('utf-8'))
-                self.hashString += self.m.hexdigest()
+                self.hashString = self.m.hexdigest()
 
-        def produceDirMetaHash(self, fileSize, multiple, lastModified):
+        def produceDirMetaHash(self, fileSize):
             self.m = hashlib.sha256()
-            
-            for i in len(fileSize):
-                self.m.update(str(lastModified).encode('utf-8'))
-                self.hashString += self.m.hexdigest()
-                self.m.update(str(fileSize).encode('utf-8'))
-                self.hashString += self.m.hexdigest()
-                self.m.update(str(multiple).encode('utf-8'))
-                self.hashString += self.m.hexdigest()
+
+            self.m.update(str(fileSize).encode('utf-8'))
+            self.hashString = self.m.hexdigest()
 
         def getHash(self):
             return self.hashString
