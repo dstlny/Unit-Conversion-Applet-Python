@@ -165,7 +165,7 @@ class AppFrame(wx.Frame):
         try:
 
             if self.returnUserChoice() == 0:
-                self.singleFile(self.openFileDialog.GetFilename(),  self.openFileDialog.GetPath())
+                self.singleFile(self.openFileDialog.GetFilename(),  self.openFileDialog.GetDirectory())
             elif self.returnUserChoice() == 1:
                 self.multipleFiles(self.openFileDialog.GetFilename(), self.openFileDialog.GetDirectory())
             elif self.returnUserChoice() == 2:
@@ -355,10 +355,8 @@ class AppFrame(wx.Frame):
         
         self.algo = algorithmGeneration()
 
-        print('-------------------------------------')
-
         try:
-            with open(directory, 'r') as f:
+            with open(directory+'\\'+filename, 'r') as f:
                 self.contents = f.readlines()
                 self.contents = [x.strip('\t \n') for x in self.contents]
         except Exception as ex:
@@ -370,7 +368,7 @@ class AppFrame(wx.Frame):
                 
                 if self.writeToFile.GetValue() == True:
                     stringToWrite = directory+' : '+filename+' : '+str(self.returnUserChoice())+' : '+str(self.returnAlgorithm())+' : '+str(self.algo.md5.getHash(self)[0:128])
-                    self.writeLineToFile(stringToWrite)
+                    self.writeLineToFile(stringToWrite, str(self.algo.md5.getHash(self)[0:128]))
                 else:
                     stringToWrite = directory+' : '+filename+' : '+str(self.returnUserChoice())+' : '+str(self.returnAlgorithm())+' : '+str(self.algo.md5.getHash(self)[0:128])
                     print(stringToWrite)
@@ -380,7 +378,7 @@ class AppFrame(wx.Frame):
                
                 if self.writeToFile.GetValue() == True:
                     stringToWrite = directory+' : '+filename+' : '+str(self.returnUserChoice())+' : '+str(self.returnAlgorithm())+' : '+str(self.algo.sha256.getHash(self)[0:256])
-                    self.writeLineToFile(stringToWrite)
+                    self.writeLineToFile(stringToWrite, str(self.algo.sha256.getHash(self)[0:256]))
                 else:
                     stringToWrite = directory+' : '+filename+' : '+str(self.returnUserChoice())+' : '+str(self.returnAlgorithm())+' : '+str(self.algo.sha256.getHash(self)[0:256])
                     print(stringToWrite)
@@ -390,7 +388,7 @@ class AppFrame(wx.Frame):
                 
                 if self.writeToFile.GetValue() == True:
                     stringToWrite = directory+' : '+filename+' : '+str(self.returnUserChoice())+' : '+str(self.returnAlgorithm())+' : '+str(self.algo.sha3_512.getHash(self)[0:512])
-                    self.writeLineToFile(stringToWrite)
+                    self.writeLineToFile(stringToWrite, str(self.algo.sha3_512.getHash(self)[0:512]))
                 else:
                     stringToWrite = directory+' : '+filename+' : '+str(self.returnUserChoice())+' : '+str(self.returnAlgorithm())+' : '+str(self.algo.sha3_512.getHash(self)[0:512])
                     print(stringToWrite)
@@ -399,8 +397,6 @@ class AppFrame(wx.Frame):
         del filename
 
         self.algo = algorithmGeneration()
-
-        print('-------------------------------------')
 
         # List all files in directory using pathlib
         basepath = Path(directory)
@@ -419,7 +415,7 @@ class AppFrame(wx.Frame):
                     
                     if self.writeToFile.GetValue() == True:
                         stringToWrite = directory+' : '+item.name+' : '+str(self.returnUserChoice())+' : '+str(self.returnAlgorithm())+' : '+str(self.algo.md5.getHash(self)[0:128])
-                        self.writeLineToFile(stringToWrite)
+                        self.writeLineToFile(stringToWrite, str(self.algo.md5.getHash(self)[0:128]))
                     else:
                         stringToWrite = directory+' : '+item.name+' : '+str(self.returnUserChoice())+' : '+str(self.returnAlgorithm())+' : '+str(self.algo.md5.getHash(self)[0:128])
                         print(stringToWrite)
@@ -429,7 +425,7 @@ class AppFrame(wx.Frame):
 
                     if self.writeToFile.GetValue() == True:
                         stringToWrite = directory+' : '+item.name+' : '+str(self.returnUserChoice())+' : '+str(self.returnAlgorithm())+' : '+str(self.algo.sha256.getHash(self)[0:256])
-                        self.writeLineToFile(stringToWrite)
+                        self.writeLineToFile(stringToWrite, str(self.algo.sha256.getHash(self)[0:256]))
                     else:
                         stringToWrite = directory+' : '+item.name+' : '+str(self.returnUserChoice())+' : '+str(self.returnAlgorithm())+' : '+str(self.algo.sha256.getHash(self)[0:256])
                         print(stringToWrite)
@@ -439,7 +435,7 @@ class AppFrame(wx.Frame):
                     
                     if self.writeToFile.GetValue() == True:
                         stringToWrite = directory+' : '+item.name+' : '+str(self.returnUserChoice())+' : '+str(self.returnAlgorithm())+' : '+str(self.algo.sha3_512.getHash(self)[0:512])
-                        self.writeLineToFile(stringToWrite)
+                        self.writeLineToFile(stringToWrite, str(self.algo.sha3_512.getHash(self)[0:512]))
                     else:
                         stringToWrite = directory+' : '+item.name+' : '+str(self.returnUserChoice())+' : '+str(self.returnAlgorithm())+' : '+str(self.algo.sha3_512.getHash(self)[0:512])
                         print(stringToWrite)
@@ -448,9 +444,6 @@ class AppFrame(wx.Frame):
         del filename
 
         self.algo = algorithmGeneration()
-
-        print('-------------------------------------')
-
         basepath = Path(directory)
         files_in_basepath = (entry for entry in basepath.iterdir() if entry.is_file())
         for item in files_in_basepath:
@@ -462,7 +455,7 @@ class AppFrame(wx.Frame):
 
                 if self.writeToFile.GetValue() == True:
                     stringToWrite = directory+' : '+item.name+' : '+str(self.returnUserChoice())+' : '+str(self.returnAlgorithm())+' : '+str(self.algo.md5.getHash(self)[0:128])
-                    self.writeLineToFile(stringToWrite)
+                    self.writeLineToFile(stringToWrite, str(self.algo.md5.getHash(self)[0:128]))
                 else:
                     stringToWrite = directory+' : '+item.name+' : '+str(self.returnUserChoice())+' : '+str(self.returnAlgorithm())+' : '+str(self.algo.md5.getHash(self)[0:128])
                     print(stringToWrite)
@@ -472,7 +465,7 @@ class AppFrame(wx.Frame):
 
                 if self.writeToFile.GetValue() == True:
                     stringToWrite = directory+' : '+item.name+' : '+str(self.returnUserChoice())+' : '+str(self.returnAlgorithm())+' : '+str(self.algo.sha256.getHash(self)[0:256])
-                    self.writeLineToFile(stringToWrite)
+                    self.writeLineToFile(stringToWrite, str(self.algo.sha256.getHash(self)[0:256]))
                 else:
                     stringToWrite = directory+' : '+item.name+' : '+str(self.returnUserChoice())+' : '+str(self.returnAlgorithm())+' : '+str(self.algo.sha256.getHash(self)[0:256])
                     print(stringToWrite)
@@ -482,23 +475,66 @@ class AppFrame(wx.Frame):
 
                 if self.writeToFile.GetValue() == True:
                     stringToWrite = directory+' : '+item.name+' : '+str(self.returnUserChoice())+' : '+str(self.returnAlgorithm())+' : '+str(self.algo.sha3_512.getHash(self)[0:512])
-                    self.writeLineToFile(stringToWrite)
+                    self.writeLineToFile(stringToWrite, str(self.algo.sha3_512.getHash(self)[0:512]))
                 else:
                     stringToWrite = directory+' : '+item.name+' : '+str(self.returnUserChoice())+' : '+str(self.returnAlgorithm())+' : '+str(self.algo.sha3_512.getHash(self)[0:512])
                     print(stringToWrite)
 
-    def writeLineToFile(self, lineToWrite):
+    def writeLineToFile(self, lineToWrite, file_hash):
         self.defaultPath = os.path.dirname(os.path.realpath(__file__))
         self.defaultPath+='\\'
-        if os.path.isfile(self.defaultPath+"final.txt")  == False:
-            f = open(self.defaultPath+"final.txt","w+")
-            f.write(lineToWrite+'\n')
-            f.close()
-        else:
-            f = open(self.defaultPath+"final.txt","a")
-            f.write(lineToWrite+'\n')
-            f.close()
+        self.hash = file_hash
 
+        if os.path.isfile(self.defaultPath+"final.txt")  == False:
+            with open(self.defaultPath+"final.txt","w+") as f:
+                f.write(lineToWrite+'\n')
+                f.close()
+        else:
+            self.contents = set([line.strip("\n") for line in open(self.defaultPath+"final.txt")])
+            
+            imported_path, imported_file, imported_choice, imported_algo, imported_hashy_boi = lineToWrite.split(" : ")
+            imported_hashy_boi = self.hash
+
+            for line in self.contents:
+                path_name, file_name, user_choice, algorithm_choice, hashy_boi = line.split(" : ")
+
+                if imported_path == path_name and imported_file == file_name and imported_choice == user_choice and imported_algo == algorithm_choice and imported_hashy_boi != hashy_boi:
+                    this_string = path_name + ' : ' + file_name  + ' : ' + user_choice  + ' : ' + algorithm_choice + ' : ' + hashy_boi
+                    string_to_add = imported_path  + ' : ' + imported_file  + ' : ' + imported_choice  + ' : ' + imported_algo + ' : ' + imported_hashy_boi
+                    self.contents.remove(this_string)
+                    self.contents.add(string_to_add)
+                    self.onAltered(file_name, hashy_boi, imported_hashy_boi)
+                    print('-------------\nfallen into main if statement\nline removed = {}\nline added = {}'.format(this_string, string_to_add))
+                    for extra in self.contents:
+                        print('{} is unique and in self.contents'.format(extra))
+                    self.cleaned = True
+
+                    if self.cleaned:
+                        with open(self.defaultPath+"final.txt","w+") as f:
+                            for self.this_line in self.contents:
+                                f.write(self.this_line+'\n')
+                
+                else: ##this must mean that the curent imported file does not exist within final.txt, thus print it to the file
+                    string_to_add = imported_path  + ' : ' + imported_file  + ' : ' + imported_choice  + ' : ' + imported_algo + ' : ' + imported_hashy_boi
+                    self.contents = set([line.strip("\n") for line in open(self.defaultPath+"final.txt")])
+                    self.contents.add(string_to_add)
+                    print('-------------\nfallen into else')
+                    with open(self.defaultPath+"final.txt","w+") as f:
+                        for extra in self.contents:
+                            print('{} is unique and in self.contents'.format(extra))
+                            f.write(extra+'\n')
+
+    def onAltered(self, fileAltered, oldFileHash, newFileHash):
+        """Display dialog saying it's empty"""
+        wx.MessageBox("Old hash is '{}'\nNew hash '{}'".format(oldFileHash,newFileHash),
+                      "'{}' altered".format(fileAltered),
+                      wx.OK | wx.ICON_ERROR)
+
+    def onFinished(self):
+        """Display dialog saying it's empty"""
+        wx.MessageBox("All operations have been finished",
+                      "FINISHED OPERATION",
+                      wx.OK | wx.ICON_ERROR)
 
 class algorithmGeneration:
 
