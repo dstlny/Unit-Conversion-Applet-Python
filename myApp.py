@@ -34,7 +34,7 @@ class AppFrame(wx.Frame):
 
                 for i in self.contents:
                     currName, currFactor, currSymbol = i.split(',')
-                    self.dict[currName] = (float(currFactor.replace(" ", "")), currSymbol.replace(" ", ""))
+                    self.dict['British Pound (GBP) to ' + currName] = (float(currFactor.replace(" ", "")), currSymbol.replace(" ", ""))
 
             del self.contents
             del currName
@@ -89,6 +89,8 @@ class AppFrame(wx.Frame):
         # Creating various UI elements for the currency conversion module
         self.currencyConversion = wx.StaticBox(self.mainPanel, wx.ID_ANY, "Currency Conversion", size=(850, 100))
         self.currencyDrop = wx.ComboBox(self.mainPanel, choices=list(self.dict.keys()), style=wx.CB_READONLY)
+        self.measurementDrop.SetSelection(0)
+        self.currencyDrop.SetSelection(0)
         self.userCurrencyLabel = wx.StaticText(self.mainPanel, wx.ID_ANY, "   Value: ")
         self.currencyInput = wx.TextCtrl(self.mainPanel, wx.ID_ANY, "")
         self.currencyResult = wx.StaticText(self.mainPanel, wx.ID_ANY, "  "+str(self.currencyConvertLab)+"                ")
@@ -192,7 +194,7 @@ class AppFrame(wx.Frame):
                     finally:
                         if self.currName and self.currFactor and self.currSymbol:
                             self.currencyDrop.Clear()
-                            self.dict[self.currName] = (float(self.currFactor), self.currSymbol.replace(" ", ""))
+                            self.dict['British Pound (GBP) to ' + self.currName] = (float(self.currFactor), self.currSymbol.replace(" ", ""))
                             self.currencyDrop.Append(list(self.dict.keys()))
                             self.measurementDrop.SetSelection(0)
                             self.currencyDrop.SetSelection(0)
@@ -353,7 +355,7 @@ class AppFrame(wx.Frame):
 
         except Exception as ex:
             print(ex)
-        else:
+        finally:
 
             if self.returnAlgorithm() == 0:
                 self.algo.md5.produceFileHash(self, self.contents)
@@ -540,24 +542,13 @@ class algorithmGeneration:
     class md5:
         
         def produceFileHash(self, byte):
-            self.m = hashlib.md5()
-            
-            for b in byte:
-                self.m.update(str(b).encode('utf-8'))
-                self.hashString = self.m.hexdigest()
+            self.hashString = hashlib.md5(str([b for b in byte]).encode('utf-8')).hexdigest()
 
         def produceDirHash(self, byte):
-            self.m = hashlib.md5()
-
-            for b in byte:
-                self.m.update(str(b).encode('utf-8'))
-                self.hashString = self.m.hexdigest()
+            self.hashString = hashlib.md5(str([b for b in byte]).encode('utf-8')).hexdigest()
             
         def produceDirMetaHash(self, fileSize):
-            self.m = hashlib.md5()
-
-            self.m.update(str(fileSize).encode('utf-8'))
-            self.hashString = self.m.hexdigest()
+            self.hashString = hashlib.md5(str(fileSize).encode('utf-8')).hexdigest()
 
         def getHash(self):
             return self.hashString
@@ -565,24 +556,13 @@ class algorithmGeneration:
     class sha256:
 
         def produceFileHash(self, byte):
-            self.m = hashlib.sha256()
-            
-            for b in byte:
-                self.m.update(str(b).encode('utf-8'))
-                self.hashString = self.m.hexdigest()
+            self.hashString = hashlib.sha256(str([b for b in byte]).encode('utf-8')).hexdigest()
 
         def produceDirHash(self, byte):
-            self.m = hashlib.sha256()
-            
-            for b in byte:
-                self.m.update(str(b).encode('utf-8'))
-                self.hashString = self.m.hexdigest()
+            self.hashString = hashlib.sha256(str([b for b in byte]).encode('utf-8')).hexdigest()
 
         def produceDirMetaHash(self, fileSize):
-            self.m = hashlib.sha256()
-
-            self.m.update(str(fileSize).encode('utf-8'))
-            self.hashString = self.m.hexdigest()
+            self.hashString = hashlib.sha256(str(fileSize).encode('utf-8')).hexdigest()
 
         def getHash(self):
             return self.hashString
@@ -590,28 +570,16 @@ class algorithmGeneration:
     class sha3_512:
 
         def produceFileHash(self, byte):
-            self.m = hashlib.sha3_512()
-            
-            for b in byte:
-                self.m.update(str(b).encode('utf-8'))
-                self.hashString = self.m.hexdigest()
+            self.hashString = hashlib.sha3_512(str([b for b in byte]).encode('utf-8')).hexdigest()
 
         def produceDirHash(self, byte):
-            self.m = hashlib.sha3_512()
-            
-            for b in byte:
-                self.m.update(str(b).encode('utf-8'))
-                self.hashString = self.m.hexdigest()
+            self.hashString = hashlib.sha3_512(str([b for b in byte]).encode('utf-8')).hexdigest()
 
         def produceDirMetaHash(self, fileSize):
-            self.m = hashlib.sha3_512()
-
-            self.m.update(str(fileSize).encode('utf-8'))
-            self.hashString = self.m.hexdigest()
+            self.hashString = hashlib.sha3_512(str(fileSize).encode('utf-8')).hexdigest()
 
         def getHash(self):
             return self.hashString
-
 
 # Main program loop
 def main():
