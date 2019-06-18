@@ -182,23 +182,23 @@ class AppFrame(wx.Frame):
 
                         try:
                             self.currFactor = float(self.currFactor)
-                        except Exception as exception:
+                        except:
                             self.currName = ""
                             self.currFactor = 00.00
                             self.currSymbol = ""
                             continue
 
-                    except ValueError as exception:
+                    except:
                         continue
-
                     finally:
-                        self.currencyCombo.append('British Pounds (GBP) to ' + self.currName)
-                        self.currencyFactors.append(self.currFactor)
-                        self.currencySymbols.append(self.currSymbol)
-                        self.currencyDrop.Clear()
-                        self.currencyDrop.AppendItems(self.currencyCombo)
-                        self.measurementDrop.SetSelection(0)
-                        self.currencyDrop.SetSelection(0)
+                        if self.currName and self.currFactor and self.currSymbol:
+                            self.currencyCombo.append('British Pounds (GBP) to ' + self.currName)
+                            self.currencyFactors.append(self.currFactor)
+                            self.currencySymbols.append(self.currSymbol)
+                            self.currencyDrop.Clear()
+                            self.currencyDrop.AppendItems(self.currencyCombo)
+                            self.measurementDrop.SetSelection(0)
+                            self.currencyDrop.SetSelection(0)
 
         except Exception as exception:
             print(exception)
@@ -402,7 +402,6 @@ class AppFrame(wx.Frame):
                     self.contents = [re.sub(r"[\n\t]*", "", x) for x in f.readlines()]
 
             except Exception as exceptio:
-                print(exceptio)
                 continue
             finally:
 
@@ -412,7 +411,6 @@ class AppFrame(wx.Frame):
                     if self.writeToFile.GetValue() == True:
                         stringToWrite = directory+' : '+item.name+' : '+str(self.returnUserChoice())+' : '+str(self.returnAlgorithm())+' : '+str(self.algo.md5.getHash(self)[0:128])
                         self.writeLineToFile(stringToWrite, str(self.algo.md5.getHash(self)[0:128]))
-                        print(stringToWrite)
                     else:
                         stringToWrite = directory+' : '+item.name+' : '+str(self.returnUserChoice())+' : '+str(self.returnAlgorithm())+' : '+str(self.algo.md5.getHash(self)[0:128])
                         print(stringToWrite)
@@ -492,12 +490,7 @@ class AppFrame(wx.Frame):
             imported_path, imported_file, imported_choice, imported_algo, imported_hashy_boi = lineToWrite.split(" : ")
             imported_hashy_boi = self.hash
 
-            if not self.contents:
-                print('{} written'.format(lineToWrite))
-                with open(self.defaultPath+"final.txt","w+") as f:
-                    f.write(lineToWrite+'\n')
-                    f.close()
-            else:
+            if self.contents:
 
                 for line in self.contents:
                     path_name, file_name, user_choice, algorithm_choice, hashy_boi = line.split(" : ")
@@ -527,6 +520,11 @@ class AppFrame(wx.Frame):
                             for extra in self.contents:
                                 print('{} is unique and in self.contents'.format(extra))
                                 f.write(extra+'\n')
+            else:
+                print('self.contents is null, {} has been written'.format(lineToWrite))
+                with open(self.defaultPath+"final.txt","w+") as f:
+                    f.write(lineToWrite+'\n')
+                    f.close()
 
     def onAltered(self, fileAltered, oldFileHash, newFileHash):
         """Display dialog saying it's empty"""
