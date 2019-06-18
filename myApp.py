@@ -25,19 +25,21 @@ class AppFrame(wx.Frame):
         self.filePath+='\\currency.txt'
 
         try:
-            self.currencyCombo = []
-            self.currencyFactors = []
-            self.currencySymbols = []
+
             self.contents = []
+            self.dict = {}
 
             with open(self.filePath, 'r', encoding='utf-8-sig') as f:
                 self.contents = [re.sub(r"[\n\t]*", "", x) for x in f.readlines()]
 
                 for i in self.contents:
                     currName, currFactor, currSymbol = i.split(',')
-                    self.currencyCombo.append('British Pounds (GBP) to ' + currName)
-                    self.currencyFactors.append(float(currFactor))
-                    self.currencySymbols.append(currSymbol)
+                    self.dict[currName] = (float(currFactor.replace(" ", "")), currSymbol.replace(" ", ""))
+
+            del self.contents
+            del currName
+            del currFactor
+            del currSymbol
 
         except Exception as exception:
             print(exception)
@@ -86,7 +88,7 @@ class AppFrame(wx.Frame):
 
         # Creating various UI elements for the currency conversion module
         self.currencyConversion = wx.StaticBox(self.mainPanel, wx.ID_ANY, "Currency Conversion", size=(850, 100))
-        self.currencyDrop = wx.ComboBox(self.mainPanel, choices=self.currencyCombo, style=wx.CB_READONLY)
+        self.currencyDrop = wx.ComboBox(self.mainPanel, choices=list(self.dict.keys()), style=wx.CB_READONLY)
         self.userCurrencyLabel = wx.StaticText(self.mainPanel, wx.ID_ANY, "   Value: ")
         self.currencyInput = wx.TextCtrl(self.mainPanel, wx.ID_ANY, "")
         self.currencyResult = wx.StaticText(self.mainPanel, wx.ID_ANY, "  "+str(self.currencyConvertLab)+"                ")
@@ -163,13 +165,11 @@ class AppFrame(wx.Frame):
         self.openFileDialog.ShowModal()
 
         try:
-            self.currencyCombo = []
-            self.currencyFactors = []
-            self.currencySymbols = []
             self.contents = []
+            self.dict = {}
             self.currName = ""
-            self.currFactor = ""
-            self.currSymbol = ""
+            self.currFactor = 00.00
+            self.currSymbol = "'"
 
             with open(self.openFileDialog.GetPath(), 'r', encoding='utf-8-sig') as f:
                 self.contents = [re.sub(r"[\n\t]*", "", x) for x in f.readlines()]
@@ -183,20 +183,17 @@ class AppFrame(wx.Frame):
                         try:
                             self.currFactor = float(self.currFactor)
                         except:
-                            self.currName = ""
+                            self.currname = ""
                             self.currFactor = 00.00
                             self.currSymbol = ""
                             continue
-
                     except:
                         continue
                     finally:
                         if self.currName and self.currFactor and self.currSymbol:
-                            self.currencyCombo.append('British Pounds (GBP) to ' + self.currName)
-                            self.currencyFactors.append(self.currFactor)
-                            self.currencySymbols.append(self.currSymbol)
                             self.currencyDrop.Clear()
-                            self.currencyDrop.AppendItems(self.currencyCombo)
+                            self.dict[self.currName] = (float(self.currFactor), self.currSymbol.replace(" ", ""))
+                            self.currencyDrop.Append(list(self.dict.keys()))
                             self.measurementDrop.SetSelection(0)
                             self.currencyDrop.SetSelection(0)
 
@@ -256,13 +253,13 @@ class AppFrame(wx.Frame):
         return (b - a)
 
     def getCurrencyFactor(self):
-        return self.currencyFactors[self.currencyDrop.GetSelection()]
+        return self.dict[self.currencyDrop.GetStringSelection()][0]
 
     def getUnitFactor(self):
         return self.unitFactors[self.measurementDrop.GetSelection()]
 
     def getSymbol(self):
-        return self.currencySymbols[self.currencyDrop.GetSelection()]
+         return self.dict[self.currencyDrop.GetStringSelection()][1]
 
     def getDefault(self):
         return "£"
@@ -299,7 +296,7 @@ class AppFrame(wx.Frame):
 
     def currencyCalculation(self):
 
-        self.r = range(0, len(self.currencyFactors))
+        self.r = range(0, len(self.dict))
 
         if self.currencyDrop.GetSelection() in self.r:
             if self.globalCalcReverse.GetValue():
