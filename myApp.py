@@ -3,6 +3,8 @@ import os
 import hashlib
 from pathlib import Path
 import re
+import os 
+from datetime import datetime
 
 class AppFrame(wx.Frame):
 
@@ -117,6 +119,7 @@ class AppFrame(wx.Frame):
         self.fileDirectorySizer.AddSpacer(10)
         self.fileDirectorySizer.Add(self.writeToFile, flag=wx.ALIGN_CENTER)
         self.fileDirectorySizer.AddSpacer(10)
+        self.i = 0
 
         # Adding stuff to the fileDirectorySizer boxSizer, which allows it to scale.
         self.sizer.Add(self.fileDirectorySizer, flag=wx.ALIGN_LEFT)
@@ -125,7 +128,13 @@ class AppFrame(wx.Frame):
         self.algorithmSelection = wx.StaticBox(self.mainPanel, wx.ID_ANY, "Algorithms", pos=(340, 163), size=(242, 115))
         self.algorithms = ['Message Digest 5, 128-bit', 'Secure Haashing Algorithm, 256-bit', 'Secure Hashing Algorithm 3, 512-bit']
         self.algorithmChoices = wx.RadioBox(self.mainPanel, wx.ID_ANY, choices=self.algorithms, pos=(350, 180), style=wx.RA_SPECIFY_ROWS)
-        self.algorithmSelectionSizer = wx.StaticBoxSizer(self.algorithmSelection, wx.VERTICAL)
+
+        # Creating various UI elements for the logging module
+        self.textAreaBorder = wx.StaticBox(self.mainPanel, wx.ID_ANY, "Logging Output", pos=(18, 350), size=(847, 300))
+        self.textArea = wx.TextCtrl(self.mainPanel, wx.ID_ANY, "", pos=(25, 370), size=(833,272), style=wx.TE_READONLY | wx.TE_MULTILINE)
+        self.textArea.HideNativeCaret()
+        self.textArea.SetForegroundColour(wx.WHITE)
+        self.textArea.SetBackgroundColour(wx.BLACK)
 
         # Bind events to things
         self.Bind(wx.EVT_BUTTON, self.onCurrConvert, self.currConvertButton)
@@ -144,8 +153,9 @@ class AppFrame(wx.Frame):
 
         fileMenu = wx.Menu()
         exitItem = fileMenu.Append(wx.ID_EXIT)
-        loadCurrency = fileMenu.Append(1001, '&Load Currency File..')
+        loadCurrency = fileMenu.Append(1001, '&Load Currency File...')
         loadFileOrDirectory = fileMenu.Append(1002, '&Load File or Directory...')
+        hideLogWindow = fileMenu.Append(1003, '&Enable/Disable log window...')
         helpMenu = wx.Menu()
         aboutItem = helpMenu.Append(wx.ID_ABOUT)
         menuBar = wx.MenuBar()
@@ -156,15 +166,28 @@ class AppFrame(wx.Frame):
         self.Bind(wx.EVT_MENU, self.onAbout,source=aboutItem)
         self.Bind(wx.EVT_MENU, self.onLoadCurrency,source=loadCurrency, id=1001)
         self.Bind(wx.EVT_MENU, self.loadFileorDirectory,source=loadFileOrDirectory,id=1002)
+        self.Bind(wx.EVT_MENU, self.onHide,source=hideLogWindow,id=1003)
 
     def onExit(self, event):
         """Close the frame, terminating the application."""
         self.Close(True)
 
+    def onHide(self, event):
+        self.Refresh()
+        if self.textArea.IsShown() == True:
+            self.textArea.Show(False)
+            self.textAreaBorder.Show(False)
+            self.SetSize(900, 410)
+        else:
+            self.textAreaBorder.Show(True)
+            self.textArea.Show(True)
+            self.SetSize(900, 750)
+
     def onLoadCurrency(self, event):
         self.defaultPath = os.path.dirname(os.path.realpath(__file__))
         self.openFileDialog = wx.FileDialog(self, "Open and import a currency...", self.defaultPath , "","Text files (*.txt)|*.txt", wx.FD_OPEN | wx.FD_FILE_MUST_EXIST)
         self.openFileDialog.ShowModal()
+        self.Refresh()
 
         try:
             self.contents = []
@@ -206,14 +229,28 @@ class AppFrame(wx.Frame):
         self.defaultPath = os.path.dirname(os.path.realpath(__file__))
         self.openFileDialog = wx.FileDialog(self, "Open and load a directory...", self.defaultPath, "","", wx.FD_OPEN | wx.FD_FILE_MUST_EXIST)
         self.openFileDialog.ShowModal()
+        font1 = wx.Font(11, wx.MODERN, wx.NORMAL, wx.NORMAL, False, u'Consolas')
+        self.Refresh()
 
         try:
 
             if self.returnUserChoice() == 0:
+                self.textArea.SetFont(font1)
+                self.textArea.Clear()
+                self.i = 0
+                self.textArea.AppendText("Directory '{}'\nFile No, Filename, Hash".format(self.openFileDialog.GetDirectory()))
                 self.singleFile(self.openFileDialog.GetFilename(),  self.openFileDialog.GetDirectory())
             elif self.returnUserChoice() == 1:
+                self.textArea.SetFont(font1)
+                self.i = 0
+                self.textArea.Clear()
+                self.textArea.AppendText("Directory '{}'\nFile No, Filename, Hash".format(self.openFileDialog.GetDirectory()))
                 self.multipleFiles(self.openFileDialog.GetFilename(), self.openFileDialog.GetDirectory())
             elif self.returnUserChoice() == 2:
+                self.textArea.SetFont(font1)
+                self.textArea.Clear()
+                self.i = 0
+                self.textArea.AppendText("Directory '{}' meta-data\nFile No, Filename, Hash, Last Modified".format(self.openFileDialog.GetDirectory()))
                 self.multipleFilesMetaData(self.openFileDialog.GetFilename(), self.openFileDialog.GetDirectory())
 
         except Exception as excepti:
@@ -232,6 +269,7 @@ class AppFrame(wx.Frame):
         self.currencyResult.SetLabelText("  "+str(self.currencyConvertLab)+"                ")
         self.measurementDrop.SetSelection(0)
         self.currencyDrop.SetSelection(0)
+        self.Refresh()
 
     def setUnitResult(self, result):
         self.unitResultLabel.SetLabelText("  "+str(round(result, 2)) + "     ")
@@ -359,33 +397,37 @@ class AppFrame(wx.Frame):
 
             if self.returnAlgorithm() == 0:
                 self.algo.md5.produceFileHash(self, self.contents)
+                self.i += 1                 
+                self.textArea.AppendText("\n{}.  {}  {}".format(self.i,filename,str(self.algo.md5.getHash(self)[0:128])))
                 
                 if self.writeToFile.GetValue() == True:
                     stringToWrite = directory+' : '+filename+' : '+str(self.returnUserChoice())+' : '+str(self.returnAlgorithm())+' : '+str(self.algo.md5.getHash(self)[0:128])
                     self.writeLineToFile(stringToWrite, str(self.algo.md5.getHash(self)[0:128]))
                 else:
                     stringToWrite = directory+' : '+filename+' : '+str(self.returnUserChoice())+' : '+str(self.returnAlgorithm())+' : '+str(self.algo.md5.getHash(self)[0:128])
-                    print(stringToWrite)
 
             elif self.returnAlgorithm() == 1:
                 self.algo.sha256.produceFileHash(self, self.contents)
-               
+                self.i += 1                  
+                self.textArea.AppendText("\n{}.  {}  {}".format(self.i,filename,str(self.algo.sha256.getHash(self)[0:256])))
+            
                 if self.writeToFile.GetValue() == True:
                     stringToWrite = directory+' : '+filename+' : '+str(self.returnUserChoice())+' : '+str(self.returnAlgorithm())+' : '+str(self.algo.sha256.getHash(self)[0:256])
                     self.writeLineToFile(stringToWrite, str(self.algo.sha256.getHash(self)[0:256]))
                 else:
                     stringToWrite = directory+' : '+filename+' : '+str(self.returnUserChoice())+' : '+str(self.returnAlgorithm())+' : '+str(self.algo.sha256.getHash(self)[0:256])
-                    print(stringToWrite)
 
             elif self.returnAlgorithm()== 2:
                 self.algo.sha3_512.produceFileHash(self, self.contents)
+
+                self.i += 1
+                self.textArea.AppendText("\n{}.  {}  {}".format(self.i,filename,str(self.algo.sha3_512.getHash(self)[0:512])))
                 
                 if self.writeToFile.GetValue() == True:
                     stringToWrite = directory+' : '+filename+' : '+str(self.returnUserChoice())+' : '+str(self.returnAlgorithm())+' : '+str(self.algo.sha3_512.getHash(self)[0:512])
                     self.writeLineToFile(stringToWrite, str(self.algo.sha3_512.getHash(self)[0:512]))
                 else:
                     stringToWrite = directory+' : '+filename+' : '+str(self.returnUserChoice())+' : '+str(self.returnAlgorithm())+' : '+str(self.algo.sha3_512.getHash(self)[0:512])
-                    print(stringToWrite)
 
     def multipleFiles(self, filename, directory):
         del filename
@@ -399,40 +441,46 @@ class AppFrame(wx.Frame):
             try:
                 with open(directory+"\\"+item.name, 'r') as f:
                     self.contents = [re.sub(r"[\n\t]*", "", x) for x in f.readlines()]
-
             except Exception as exceptio:
                 continue
             finally:
 
                 if self.returnAlgorithm() == 0:
                     self.algo.md5.produceDirHash(self, self.contents)
+
+                    self.i += 1
+                    self.textArea.AppendText("\n{}.  {}  {}".format(self.i,item.name,str(self.algo.md5.getHash(self)[0:128])))
                     
                     if self.writeToFile.GetValue() == True:
                         stringToWrite = directory+' : '+item.name+' : '+str(self.returnUserChoice())+' : '+str(self.returnAlgorithm())+' : '+str(self.algo.md5.getHash(self)[0:128])
                         self.writeLineToFile(stringToWrite, str(self.algo.md5.getHash(self)[0:128]))
                     else:
                         stringToWrite = directory+' : '+item.name+' : '+str(self.returnUserChoice())+' : '+str(self.returnAlgorithm())+' : '+str(self.algo.md5.getHash(self)[0:128])
-                        print(stringToWrite)
 
                 elif self.returnAlgorithm() == 1:
                     self.algo.sha256.produceDirHash(self, self.contents)
+
+                    self.i += 1
+                    self.textArea.AppendText("\n{}.  {}  {}".format(self.i,item.name,str(self.algo.sha256.getHash(self)[0:256])))
 
                     if self.writeToFile.GetValue() == True:
                         stringToWrite = directory+' : '+item.name+' : '+str(self.returnUserChoice())+' : '+str(self.returnAlgorithm())+' : '+str(self.algo.sha256.getHash(self)[0:256])
                         self.writeLineToFile(stringToWrite, str(self.algo.sha256.getHash(self)[0:256]))
                     else:
                         stringToWrite = directory+' : '+item.name+' : '+str(self.returnUserChoice())+' : '+str(self.returnAlgorithm())+' : '+str(self.algo.sha256.getHash(self)[0:256])
-                        print(stringToWrite)
+                        
 
                 elif self.returnAlgorithm() == 2:
                     self.algo.sha3_512.produceDirHash(self, self.contents)
+
+                    self.i += 1                     
+                    self.textArea.AppendText("\n{}.  {}  {}".format(self.i,item.name,str(self.algo.sha3_512.getHash(self)[0:512])))
                     
                     if self.writeToFile.GetValue() == True:
                         stringToWrite = directory+' : '+item.name+' : '+str(self.returnUserChoice())+' : '+str(self.returnAlgorithm())+' : '+str(self.algo.sha3_512.getHash(self)[0:512])
                         self.writeLineToFile(stringToWrite, str(self.algo.sha3_512.getHash(self)[0:512]))
                     else:
                         stringToWrite = directory+' : '+item.name+' : '+str(self.returnUserChoice())+' : '+str(self.returnAlgorithm())+' : '+str(self.algo.sha3_512.getHash(self)[0:512])
-                        print(stringToWrite)
 
     def multipleFilesMetaData(self, filename, directory):
         del filename
@@ -447,32 +495,38 @@ class AppFrame(wx.Frame):
             if self.returnAlgorithm() == 0:
                 self.algo.md5.produceDirMetaHash(self, self.importedFile.st_size)
 
+                self.i += 1
+                self.textArea.AppendText("\n{}.  {}  {}  {}".format(self.i,item.name,str(self.algo.md5.getHash(self)[0:128]), datetime.fromtimestamp(self.importedFile.st_mtime)))
+
                 if self.writeToFile.GetValue() == True:
                     stringToWrite = directory+' : '+item.name+' : '+str(self.returnUserChoice())+' : '+str(self.returnAlgorithm())+' : '+str(self.algo.md5.getHash(self)[0:128])
                     self.writeLineToFile(stringToWrite, str(self.algo.md5.getHash(self)[0:128]))
                 else:
                     stringToWrite = directory+' : '+item.name+' : '+str(self.returnUserChoice())+' : '+str(self.returnAlgorithm())+' : '+str(self.algo.md5.getHash(self)[0:128])
-                    print(stringToWrite)
 
             elif self.returnAlgorithm() == 1:
                 self.algo.sha256.produceDirMetaHash(self, self.importedFile.st_size)
+
+                self.i += 1                     
+                self.textArea.AppendText("\n{}.  {}  {}  {}".format(self.i,item.name,str(self.algo.sha256.getHash(self)[0:256]), datetime.fromtimestamp(self.importedFile.st_mtime)))
 
                 if self.writeToFile.GetValue() == True:
                     stringToWrite = directory+' : '+item.name+' : '+str(self.returnUserChoice())+' : '+str(self.returnAlgorithm())+' : '+str(self.algo.sha256.getHash(self)[0:256])
                     self.writeLineToFile(stringToWrite, str(self.algo.sha256.getHash(self)[0:256]))
                 else:
                     stringToWrite = directory+' : '+item.name+' : '+str(self.returnUserChoice())+' : '+str(self.returnAlgorithm())+' : '+str(self.algo.sha256.getHash(self)[0:256])
-                    print(stringToWrite)
 
             elif self.returnAlgorithm() == 2:
                 self.algo.sha3_512.produceDirMetaHash(self, self.importedFile.st_size)
+                
+                self.i += 1                     
+                self.textArea.AppendText("\n{}.  {}  {}  {}".format(self.i,item.name,str(self.algo.sha3_512.getHash(self)[0:512]), datetime.fromtimestamp(self.importedFile.st_mtime)))
 
                 if self.writeToFile.GetValue() == True:
                     stringToWrite = directory+' : '+item.name+' : '+str(self.returnUserChoice())+' : '+str(self.returnAlgorithm())+' : '+str(self.algo.sha3_512.getHash(self)[0:512])
                     self.writeLineToFile(stringToWrite, str(self.algo.sha3_512.getHash(self)[0:512]))
                 else:
                     stringToWrite = directory+' : '+item.name+' : '+str(self.returnUserChoice())+' : '+str(self.returnAlgorithm())+' : '+str(self.algo.sha3_512.getHash(self)[0:512])
-                    print(stringToWrite)
 
     def writeLineToFile(self, lineToWrite, file_hash):
         self.defaultPath = os.path.dirname(os.path.realpath(__file__))
@@ -493,16 +547,16 @@ class AppFrame(wx.Frame):
 
                 for line in self.contents:
                     path_name, file_name, user_choice, algorithm_choice, hashy_boi = line.split(" : ")
+                    this_string = path_name + ' : ' + file_name  + ' : ' + user_choice  + ' : ' + algorithm_choice
+                    string_to_add = imported_path  + ' : ' + imported_file  + ' : ' + imported_choice  + ' : ' + imported_algo 
 
-                    if imported_path == path_name and imported_file == file_name and imported_choice == user_choice and imported_algo == algorithm_choice and imported_hashy_boi != hashy_boi:
+                    if string_to_add == this_string and imported_hashy_boi != hashy_boi:
                         this_string = path_name + ' : ' + file_name  + ' : ' + user_choice  + ' : ' + algorithm_choice + ' : ' + hashy_boi
                         string_to_add = imported_path  + ' : ' + imported_file  + ' : ' + imported_choice  + ' : ' + imported_algo + ' : ' + imported_hashy_boi
                         self.contents.remove(this_string)
                         self.contents.add(string_to_add)
                         self.onAltered(file_name, hashy_boi, imported_hashy_boi)
                         print('-------------\nfallen into main if statement\nline removed = {}\nline added = {}'.format(this_string, string_to_add))
-                        for extra in self.contents:
-                            print('{} is unique and in self.contents'.format(extra))
                         self.cleaned = True
 
                         if self.cleaned:
