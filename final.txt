@@ -1,37 +1,33 @@
-C:\Users\Luke\Documents\GitHub\Unit-and-Currency-Conversion-Applet-Python : currency2.txt : 2 : 2 : 282c3107db297ece5f84a019a8979e01c47c3e88cf0e31803945d96dd65aa74cbc729d1458f676ff2637e14dd62d7f9bf8ea8cf8740e9ea8f1ed774c017d2e3a
-C:\Users\Luke\Documents\GitHub\Unit-and-Currency-Conversion-Applet-Python : currency_invalid.txt : 2 : 0 : c45147dee729311ef5b5c3003946c48f
-C:\Users\Luke\Documents\GitHub\Unit-and-Currency-Conversion-Applet-Python : currency2.txt : 2 : 0 : d6baf65e0b240ce177cf70da146c8dc8
-c:\Users\Luke\Documents\GitHub\Unit-and-Currency-Conversion-Applet-Python : final.txt : 2 : 0 : 0d9095b0d6bbe98ea0c9c02b11b59ee3
-C:\Users\Luke\Documents\GitHub\Unit-and-Currency-Conversion-Applet-Python : README.md : 2 : 2 : 79b67eb4f0c72160698854d6446b9752ec0c777d6a5762c8b67aee3a36950b8fd07460cf7a500b5673d969dc407d61155937025ceff96f6b3fb17bd3eba2b2aa
-c:\Users\Luke\Documents\GitHub\Unit-and-Currency-Conversion-Applet-Python : currency_invalid.txt : 1 : 0 : eb4140e52d5e744f3d87b8fe261f54f6
-C:\Users\Luke\Documents\GitHub\Unit-and-Currency-Conversion-Applet-Python : README.md : 1 : 2 : d801a7a53af4bb0e93a4b9f943bfd6378ce867f64aff4bf2e531d26992ea71b0892a99e7bb385692312f34ec73b5c223ea188c6ba479f031a15bb3346ad60c14
-C:\Users\Luke\Documents\GitHub\Unit-and-Currency-Conversion-Applet-Python : myApp.py : 1 : 0 : bddcb7409b4338e119e12afabcb080d9
-C:\Users\Luke\Documents\GitHub\Unit-and-Currency-Conversion-Applet-Python : final.txt : 2 : 2 : 4c34d7f3c2f726d2322c91c75e64b0f0ede46a18d65f7170184a6df44fe5744c182410627346690384ba50de6c7da59c3348affe6f647f0cfc285416b984acbe
-C:\Users\Luke\Documents\GitHub\Unit-and-Currency-Conversion-Applet-Python : myApp.py : 2 : 2 : 627e835b482736e95273c7cde9c3ee100b0d492a66695c6d6266811b7c13556049c2597c8a865508fa0518cfc03baa952b743627a35a641c20e92655ac9dfcf0
-C:\Users\Luke\Documents\GitHub\Unit-and-Currency-Conversion-Applet-Python : final.txt : 2 : 0 : fb5c2bc1aa847f387022607d16adc510
-c:\Users\Luke\Documents\GitHub\Unit-and-Currency-Conversion-Applet-Python : myApp.py : 2 : 0 : 96b7e445281a191b3922d814aae420ce
-c:\Users\Luke\Documents\GitHub\Unit-and-Currency-Conversion-Applet-Python : currency.txt : 1 : 0 : 378d2fdf8d86decec4189fc54ba8b345
-c:\Users\Luke\Documents\GitHub\Unit-and-Currency-Conversion-Applet-Python : README.md : 2 : 0 : f61d6947467ccd3aa5af24db320235dd
 C:\Users\Luke\Documents\GitHub\Unit-and-Currency-Conversion-Applet-Python : currency.txt : 2 : 0 : 39059724f73a9969845dfe4146c5660e
-C:\Users\Luke\Documents\GitHub\Unit-and-Currency-Conversion-Applet-Python : currency2.txt : 1 : 0 : ada10fed964584b440765f81adea8e77
-C:\Users\Luke\Documents\GitHub\Unit-and-Currency-Conversion-Applet-Python : myApp.py : 2 : 0 : 040fec70955253769acc94f134177c63
-c:\Users\Luke\Documents\GitHub\Unit-and-Currency-Conversion-Applet-Python : currency2.txt : 2 : 0 : d6baf65e0b240ce177cf70da146c8dc8
-C:\Users\Luke\Documents\GitHub\Unit-and-Currency-Conversion-Applet-Python : currency.txt : 1 : 0 : 378d2fdf8d86decec4189fc54ba8b345
-C:\Users\Luke\Documents\GitHub\Unit-and-Currency-Conversion-Applet-Python : myApp.py : 1 : 2 : f1516ecd8c28072fcfd93c7aff76b8bf93a4aa4edf1b231d9399199f30e4ef3991b372e63ef555659210bd6c47b63dfc9250aeab30567e0d5cd7bf85fa14b7aa
-C:\Users\Luke\Documents\GitHub\Unit-and-Currency-Conversion-Applet-Python : currency_invalid.txt : 1 : 0 : eb4140e52d5e744f3d87b8fe261f54f6
-c:\Users\Luke\Documents\GitHub\Unit-and-Currency-Conversion-Applet-Python : currency2.txt : 1 : 0 : ada10fed964584b440765f81adea8e77
+D:\OtherSSD : Luke Elam - Placement Covering Letter.docx : 2 : 2 : ceb4e0f9ce9488f575c6e5cdf5f22bdfd6f14ce93787aa5d3fd14adbc3d58aac5c0c78adc6260e0219a2a58fa9e090e0747c01e01854dddf70a829e2f427ccdf
+D:\OtherSSD : Luke Elam - Documents.pdf : 2 : 2 : d24de07df0e2ed9a78c9a222293f0ca296430585c6bd94fa466ea2da31a9feb1e2827bbf6e36050a5238a4ddc5d3b72f0eb51c6b6742a2bdfa122b09ca9c755f
+D:\OtherSSD : Luke Elam - CV.docx : 2 : 2 : d7a53404d3920b0bc48a039d9757173583a66f60e4884bad5f7e0ef885772ba4a24ed5a728a3e355daac736661a4f74c5fd28e7b08b301e7384ed85296662417
 c:\Users\Luke\Documents\GitHub\Unit-and-Currency-Conversion-Applet-Python : myApp.py : 1 : 0 : 4bb4ac36439970d4b1ce0d81c9616021
+C:\Users\Luke\Documents\GitHub\Unit-and-Currency-Conversion-Applet-Python : currency2.txt : 2 : 2 : 282c3107db297ece5f84a019a8979e01c47c3e88cf0e31803945d96dd65aa74cbc729d1458f676ff2637e14dd62d7f9bf8ea8cf8740e9ea8f1ed774c017d2e3a
+C:\Users\Luke\Documents\GitHub\Unit-and-Currency-Conversion-Applet-Python : currency2.txt : 1 : 0 : ada10fed964584b440765f81adea8e77
+C:\Users\Luke\Documents\GitHub\Unit-and-Currency-Conversion-Applet-Python : currency_invalid.txt : 0 : 0 : eb4140e52d5e744f3d87b8fe261f54f6
+C:\Users\Luke\Documents\GitHub\Unit-and-Currency-Conversion-Applet-Python : myApp.py : 2 : 0 : f1fe81fa0a090bb5339e0bc688966e9b
+C:\Users\Luke\Documents\GitHub\Unit-and-Currency-Conversion-Applet-Python : currency.txt : 1 : 0 : 378d2fdf8d86decec4189fc54ba8b345
+C:\Users\Luke\Documents\GitHub\Unit-and-Currency-Conversion-Applet-Python : currency_invalid.txt : 1 : 0 : eb4140e52d5e744f3d87b8fe261f54f6
+C:\Users\Luke\Documents\GitHub\Unit-and-Currency-Conversion-Applet-Python : final.txt : 2 : 2 : fef8ebd253b1afd2467f10cdd14b475d188c0f83157332d25487f4892fcb4184ecdf789f26b7a8db561707981812f71bab4b23451e3784e01a28f24b035f3068
+C:\Users\Luke\Documents\GitHub\Unit-and-Currency-Conversion-Applet-Python : final.txt : 1 : 0 : 63b2faeb4585f1b290b206412676f024
+C:\Users\Luke\Documents\GitHub\Unit-and-Currency-Conversion-Applet-Python : myApp.py : 1 : 0 : a551bd42a4ca698d985a3cd42fdd2f47
 C:\Users\Luke\Documents\GitHub\Unit-and-Currency-Conversion-Applet-Python : README.md : 1 : 0 : 2559569d84739c1b12126f7c6a021838
-C:\Users\Luke\Documents\GitHub\Unit-and-Currency-Conversion-Applet-Python : currency.txt : 2 : 2 : b228034e281addd038e325655c842e2c39ad5b2da55881d6598eedc23190cc86e4b0bebd5ab8e3f705149ff33d89d6cd2512f58cd7a2a7e2e785ea8dff17237b
-C:\Users\Luke\Documents\GitHub\Unit-and-Currency-Conversion-Applet-Python : README.md : 2 : 0 : f61d6947467ccd3aa5af24db320235dd
-C:\Users\Luke\Documents\GitHub\Unit-and-Currency-Conversion-Applet-Python : currency2.txt : 1 : 2 : d8c9c903ff2f598354dcb3cc097be5d059208b0e51d4339b389348586efc7beab69c1a9f7a9dd83fdf41ee68d339555b02502d073c6193a534c19bca068cdae5
-C:\Users\Luke\Documents\GitHub\Unit-and-Currency-Conversion-Applet-Python : currency.txt : 1 : 2 : f8689ab9dad091ae5e37a89ff2f120c39f41b2a0a2edd41ccfbc0b999c084e13be218ac9a804737ce419c18d2245915be636238dd7ffd3ae4589f6c367dee87b
-c:\Users\Luke\Documents\GitHub\Unit-and-Currency-Conversion-Applet-Python : currency.txt : 2 : 0 : 39059724f73a9969845dfe4146c5660e
-C:\Users\Luke\Documents\GitHub\Unit-and-Currency-Conversion-Applet-Python : final.txt : 1 : 2 : 82799afc7e39ec0e2ad9b49466dfbcb0cf3472e92a8e3c7f4d0707742452798f9f1c677bf12b3b4793cdd169f1108b8b56b2221178f5e003adbf71395e43b337
 C:\Users\Luke\Documents\GitHub\Unit-and-Currency-Conversion-Applet-Python : currency_invalid.txt : 2 : 2 : a3625c000ccd5d41e595f631edd82f27af4343365f82643c2e931a5eec689c87909274b19e897b31c9543fc34077c0b929e5db643aa0e9621c3e1d29fa89dad7
-C:\Users\Luke\Documents\GitHub\Unit-and-Currency-Conversion-Applet-Python : currency_invalid.txt : 1 : 2 : 0c6a59778b913d4873ecb5b41f3513c6625ae42c6ae9127153ab20e913d7bd0c4c3f4cfbbb76ac659ac6671e2cf11710ec8db5f707cede65f1318ba2704df8dd
-C:\Users\Luke\Documents\GitHub\Unit-and-Currency-Conversion-Applet-Python : final.txt : 0 : 0 : 077d5bb418bb3a08608cb6eea2b5ecbb
-c:\Users\Luke\Documents\GitHub\Unit-and-Currency-Conversion-Applet-Python : final.txt : 1 : 0 : b2237cd327ca633103f5ee75f8f11f7f
-c:\Users\Luke\Documents\GitHub\Unit-and-Currency-Conversion-Applet-Python : README.md : 1 : 0 : 2559569d84739c1b12126f7c6a021838
-c:\Users\Luke\Documents\GitHub\Unit-and-Currency-Conversion-Applet-Python : currency_invalid.txt : 2 : 0 : c45147dee729311ef5b5c3003946c48f
-C:\Users\Luke\Documents\GitHub\Unit-and-Currency-Conversion-Applet-Python : final.txt : 1 : 0 : 4a09d3f6abd9d6bb5e3437e12eba36c8
+C:\Users\Luke\Documents\GitHub\Unit-and-Currency-Conversion-Applet-Python : currency.txt : 0 : 0 : 378d2fdf8d86decec4189fc54ba8b345
+D:\OtherSSD : 430.97-desktop-notebook-win10-64bit-international.hf.exe : 2 : 2 : 633c3c975005898839c280b1b7f55f8d86194b9b2f7abb3718d17025d2f2ed2bf58032db97fcfd4676dabfce707714da5e5852f546d22e116a22e1bbd1ab6071
+c:\Users\Luke\Documents\GitHub\Unit-and-Currency-Conversion-Applet-Python : currency2.txt : 1 : 0 : ada10fed964584b440765f81adea8e77
+C:\Users\Luke\Documents\GitHub\Unit-and-Currency-Conversion-Applet-Python : currency2.txt : 2 : 0 : d6baf65e0b240ce177cf70da146c8dc8
+C:\Users\Luke\Documents\GitHub\Unit-and-Currency-Conversion-Applet-Python : currency_invalid.txt : 2 : 0 : c45147dee729311ef5b5c3003946c48f
+C:\Users\Luke\Documents\GitHub\Unit-and-Currency-Conversion-Applet-Python : README.md : 2 : 2 : 79b67eb4f0c72160698854d6446b9752ec0c777d6a5762c8b67aee3a36950b8fd07460cf7a500b5673d969dc407d61155937025ceff96f6b3fb17bd3eba2b2aa
+D:\OtherSSD : AP Assignment 2018-1.docx : 2 : 2 : 9a8649ccc6c49282c692e60ef3e8cd62a1e7afee385ccd0a98dfebc630151253be43162a670476216b354461fec632079d11567b31362117dba924e85af964a1
+D:\OtherSSD : Luke Elam - Cover Letter - Placement Software Developer.docx : 2 : 2 : 111dcc74b20d7f89fb1426935e53e99689fcb81553c935c20952453c3c74402dfe122836b95c921c38af234fb6add3e2e000b855df96bf50998918c054ae5f63
+C:\Users\Luke\Documents\GitHub\Unit-and-Currency-Conversion-Applet-Python : currency.txt : 2 : 2 : b228034e281addd038e325655c842e2c39ad5b2da55881d6598eedc23190cc86e4b0bebd5ab8e3f705149ff33d89d6cd2512f58cd7a2a7e2e785ea8dff17237b
+D:\OtherSSD : EmptyStandbyList.exe : 2 : 2 : ffae0a714bb6068e8473d4af0c3c34ae15961590b64095bfb307235368d4085317f89f18fe8478c2a01b47980701d5e850491e492aa78939313e205f37ccec9e
+D:\OtherSSD : Luke Elam - Cover Letter - Placement Software Developer.pdf : 2 : 2 : 3320ed7be366bef307aab9266c3f9151c0decaa740bc0ad7028dbeb205c6b705130c25de539b152ec1cad787636a0b8ce7cb18b17a4efb28f829422d1beede2d
+C:\Users\Luke\Documents\GitHub\Unit-and-Currency-Conversion-Applet-Python : myApp.py : 2 : 2 : be8de6e82cab3ce641e15f41b2ec1db8500b5de34b111da54dd3f2ddb0059f0f69b6f985027e31b6911d8a9c5eb6905779c980be24d6ac288e18e7b29fe9a3ea
+C:\Users\Luke\Documents\GitHub\Unit-and-Currency-Conversion-Applet-Python : currency.txt : 0 : 1 : 42b73f353472e67761bea733b2fff3917103f5e78964912ea2580de2017523dc
+C:\Users\Luke\Documents\GitHub\Unit-and-Currency-Conversion-Applet-Python : final.txt : 2 : 0 : 51be2fed6c55f5aa0c16ff14c140b187
+C:\Users\Luke\Documents\GitHub\Unit-and-Currency-Conversion-Applet-Python : final.txt : 0 : 0 : 1719dcb71035074f2f651e21d1f3afb6
+C:\Users\Luke\Documents\GitHub\Unit-and-Currency-Conversion-Applet-Python : README.md : 2 : 0 : f61d6947467ccd3aa5af24db320235dd
+C:\Users\Luke\Documents\GitHub\Unit-and-Currency-Conversion-Applet-Python : currency2.txt : 0 : 0 : ada10fed964584b440765f81adea8e77

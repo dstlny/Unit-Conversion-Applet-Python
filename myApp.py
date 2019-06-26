@@ -375,15 +375,24 @@ class AppFrame(wx.Frame):
         self.unitUserInputBox.Clear()
         self.currencyInput.Clear()
 
-    def returnAlgorithm(self):
+    def returnAlgorithmInstance(self):
+        algo = algorithmGeneration()
+        if self.algorithmChoices.GetSelection() == 0:
+            algo = algo.md5
+        elif self.algorithmChoices.GetSelection() == 1:
+            algo = algo.sha256
+        elif self.algorithmChoices.GetSelection() == 2:
+            algo = algo.sha3_512
+
+        return algo
+
+    def returnAlgoNumber(self):
         return self.algorithmChoices.GetSelection()
 
     def returnUserChoice(self):
         return self.fileSelectionChoices.GetSelection()
 
     def singleFile(self, filename, directory):
-
-        self.algo = algorithmGeneration()
 
         try:
             with open(directory+"\\"+filename, "r") as f:
@@ -393,44 +402,19 @@ class AppFrame(wx.Frame):
             print(ex)
         finally:
 
-            if self.returnAlgorithm() == 0:
-                self.algo.md5.produceFileHash(self, self.contents)
-                self.i += 1            
-                self.textArea.AppendText("\n{}.  {}  {}".format(self.i, filename, str(self.algo.md5.getHash(self)[0:128])))
+            algorithm_object = self.returnAlgorithmInstance()
+            algorithm_object.produceFileHash(self, self.contents)
+            self.i += 1            
+            self.textArea.AppendText("\n{}.  {}  {}".format(self.i, filename, str(algorithm_object.getHash(self))))
                             
-                if self.writeToFile.GetValue():
-                    stringToWrite = directory+" : "+filename+" : "+str(self.returnUserChoice())+" : "+str(self.returnAlgorithm())+" : "+str(self.algo.md5.getHash(self)[0:128])
-                    self.writeLineToFile(stringToWrite, str(self.algo.md5.getHash(self)[0:128]))
-                else:
-                    stringToWrite = directory+" : "+filename+" : "+str(self.returnUserChoice())+" : "+str(self.returnAlgorithm())+" : "+str(self.algo.md5.getHash(self)[0:128])
-
-            elif self.returnAlgorithm() == 1:
-                self.algo.sha256.produceFileHash(self, self.contents)
-                self.i += 1             
-                self.textArea.AppendText("\n{}.  {}  {}".format(self.i, filename, str(self.algo.sha256.getHash(self)[0:256])))
-         
-                if self.writeToFile.GetValue():
-                    stringToWrite = directory+" : "+filename+" : "+str(self.returnUserChoice())+" : "+str(self.returnAlgorithm())+" : "+str(self.algo.sha256.getHash(self)[0:256])
-                    self.writeLineToFile(stringToWrite, str(self.algo.sha256.getHash(self)[0:256]))
-                else:
-                    stringToWrite = directory+" : "+filename+" : "+str(self.returnUserChoice())+" : "+str(self.returnAlgorithm())+" : "+str(self.algo.sha256.getHash(self)[0:256])
-
-            elif self.returnAlgorithm()== 2:
-                self.algo.sha3_512.produceFileHash(self, self.contents)
-
-                self.i += 1
-                self.textArea.AppendText("\n{}.  {}  {}".format(self.i, filename, str(self.algo.sha3_512.getHash(self)[0:512])))
-                
-                if self.writeToFile.GetValue():
-                    stringToWrite = directory+" : "+filename+" : "+str(self.returnUserChoice())+" : "+str(self.returnAlgorithm())+" : "+str(self.algo.sha3_512.getHash(self)[0:512])
-                    self.writeLineToFile(stringToWrite, str(self.algo.sha3_512.getHash(self)[0:512]))
-                else:
-                    stringToWrite = directory+" : "+filename+" : "+str(self.returnUserChoice())+" : "+str(self.returnAlgorithm())+" : "+str(self.algo.sha3_512.getHash(self)[0:512])
+            if self.writeToFile.GetValue():
+                stringToWrite = directory+" : "+filename+" : "+str(self.returnUserChoice())+" : "+str(self.returnAlgoNumber())+" : "+str(algorithm_object.getHash(self))
+                self.writeLineToFile(stringToWrite, str(algorithm_object.getHash(self)))
+            else:
+                stringToWrite = directory+" : "+filename+" : "+str(self.returnUserChoice())+" : "+str(self.returnAlgoNumber())+" : "+str(algorithm_object.getHash(self))
 
     def multipleFiles(self, filename, directory):
         del filename
-
-        self.algo = algorithmGeneration()
 
         # List all files in directory using pathlib
         basepath = Path(directory)
@@ -442,96 +426,43 @@ class AppFrame(wx.Frame):
             except Exception as exceptio:
                 continue
             finally:
-
-                if self.returnAlgorithm() == 0:
-                    self.algo.md5.produceDirHash(self, self.contents)
-
+                    algorithm_object = self.returnAlgorithmInstance()
+                    algorithm_object.produceDirHash(self, self.contents)
                     self.i += 1
-                    self.textArea.AppendText("\n{}.  {}  {}".format(self.i,item.name,str(self.algo.md5.getHash(self)[0:128])))
+                    self.textArea.AppendText("\n{}.  {}  {}".format(self.i,item.name,str(algorithm_object.getHash(self))))
            
                     if self.writeToFile.GetValue():
-                        stringToWrite = directory+" : "+item.name+" : "+str(self.returnUserChoice())+" : "+str(self.returnAlgorithm())+" : "+str(self.algo.md5.getHash(self)[0:128])
-                        self.writeLineToFile(stringToWrite, str(self.algo.md5.getHash(self)[0:128]))
+                        stringToWrite = directory+" : "+item.name+" : "+str(self.returnUserChoice())+" : "+str(self.returnAlgoNumber())+" : "+str(algorithm_object.getHash(self))
+                        self.writeLineToFile(stringToWrite, str(algorithm_object.getHash(self)))
                     else:
-                        stringToWrite = directory+" : "+item.name+" : "+str(self.returnUserChoice())+" : "+str(self.returnAlgorithm())+" : "+str(self.algo.md5.getHash(self)[0:128])
-
-                elif self.returnAlgorithm() == 1:
-                    self.algo.sha256.produceDirHash(self, self.contents)
-
-                    self.i += 1
-                    self.textArea.AppendText("\n{}.  {}  {}".format(self.i,item.name,str(self.algo.sha256.getHash(self)[0:256])))
-
-                    if self.writeToFile.GetValue():
-                        stringToWrite = directory+" : "+item.name+" : "+str(self.returnUserChoice())+" : "+str(self.returnAlgorithm())+" : "+str(self.algo.sha256.getHash(self)[0:256])
-                        self.writeLineToFile(stringToWrite, str(self.algo.sha256.getHash(self)[0:256]))
-                    else:
-                        stringToWrite = directory+" : "+item.name+" : "+str(self.returnUserChoice())+" : "+str(self.returnAlgorithm())+" : "+str(self.algo.sha256.getHash(self)[0:256])
-                        
-
-                elif self.returnAlgorithm() == 2:
-                    self.algo.sha3_512.produceDirHash(self, self.contents)
-
-                    self.i += 1                     
-                    self.textArea.AppendText("\n{}.  {}  {}".format(self.i,item.name,str(self.algo.sha3_512.getHash(self)[0:512])))
-                    
-                    if self.writeToFile.GetValue():
-                        stringToWrite = directory+" : "+item.name+" : "+str(self.returnUserChoice())+" : "+str(self.returnAlgorithm())+" : "+str(self.algo.sha3_512.getHash(self)[0:512])
-                        self.writeLineToFile(stringToWrite, str(self.algo.sha3_512.getHash(self)[0:512]))
-                    else:
-                        stringToWrite = directory+" : "+item.name+" : "+str(self.returnUserChoice())+" : "+str(self.returnAlgorithm())+" : "+str(self.algo.sha3_512.getHash(self)[0:512])
+                        stringToWrite = directory+" : "+item.name+" : "+str(self.returnUserChoice())+" : "+str(self.returnAlgoNumber())+" : "+str(algorithm_object.getHash(self))
 
     def multipleFilesMetaData(self, filename, directory):
         del filename
 
-        self.algo = algorithmGeneration()
         basepath = Path(directory)
         files_in_basepath = (entry for entry in basepath.iterdir() if entry.is_file())
         for item in files_in_basepath:
 
             self.importedFile = stat(directory+"\\"+item.name)
+            algorithm_object = self.returnAlgorithmInstance()
+            algorithm_object.produceDirMetaHash(self, self.importedFile.st_size)
 
-            if self.returnAlgorithm() == 0:
-                self.algo.md5.produceDirMetaHash(self, self.importedFile.st_size)
+            self.i += 1
+            self.textArea.AppendText("\n{}.  {}  {}  {}".format(self.i,item.name,str(algorithm_object.getHash(self)), datetime.fromtimestamp(self.importedFile.st_mtime)))
 
-                self.i += 1
-                self.textArea.AppendText("\n{}.  {}  {}  {}".format(self.i,item.name,str(self.algo.md5.getHash(self)[0:128]), datetime.fromtimestamp(self.importedFile.st_mtime)))
-
-                if self.writeToFile.GetValue():
-                    stringToWrite = directory+" : "+item.name+" : "+str(self.returnUserChoice())+" : "+str(self.returnAlgorithm())+" : "+str(self.algo.md5.getHash(self)[0:128])
-                    self.writeLineToFile(stringToWrite, str(self.algo.md5.getHash(self)[0:128]))
-                else:
-                    stringToWrite = directory+" : "+item.name+" : "+str(self.returnUserChoice())+" : "+str(self.returnAlgorithm())+" : "+str(self.algo.md5.getHash(self)[0:128])
-
-            elif self.returnAlgorithm() == 1:
-                self.algo.sha256.produceDirMetaHash(self, self.importedFile.st_size)
-
-                self.i += 1                     
-                self.textArea.AppendText("\n{}.  {}  {}  {}".format(self.i,item.name,str(self.algo.sha256.getHash(self)[0:256]), datetime.fromtimestamp(self.importedFile.st_mtime)))
-
-                if self.writeToFile.GetValue():
-                    stringToWrite = directory+" : "+item.name+" : "+str(self.returnUserChoice())+" : "+str(self.returnAlgorithm())+" : "+str(self.algo.sha256.getHash(self)[0:256])
-                    self.writeLineToFile(stringToWrite, str(self.algo.sha256.getHash(self)[0:256]))
-                else:
-                    stringToWrite = directory+" : "+item.name+" : "+str(self.returnUserChoice())+" : "+str(self.returnAlgorithm())+" : "+str(self.algo.sha256.getHash(self)[0:256])
-
-            elif self.returnAlgorithm() == 2:
-                self.algo.sha3_512.produceDirMetaHash(self, self.importedFile.st_size)
-                
-                self.i += 1                     
-                self.textArea.AppendText("\n{}.  {}  {}  {}".format(self.i,item.name,str(self.algo.sha3_512.getHash(self)[0:512]), datetime.fromtimestamp(self.importedFile.st_mtime)))
-
-                if self.writeToFile.GetValue():
-                    stringToWrite = directory+" : "+item.name+" : "+str(self.returnUserChoice())+" : "+str(self.returnAlgorithm())+" : "+str(self.algo.sha3_512.getHash(self)[0:512])
-                    self.writeLineToFile(stringToWrite, str(self.algo.sha3_512.getHash(self)[0:512]))
-                else:
-                    stringToWrite = directory+" : "+item.name+" : "+str(self.returnUserChoice())+" : "+str(self.returnAlgorithm())+" : "+str(self.algo.sha3_512.getHash(self)[0:512])
+            if self.writeToFile.GetValue():
+                stringToWrite = directory+" : "+item.name+" : "+str(self.returnUserChoice())+" : "+str(self.returnAlgoNumber())+" : "+str(algorithm_object.getHash(self))
+                self.writeLineToFile(stringToWrite, str(algorithm_object.getHash(self)))
+            else:
+                stringToWrite = directory+" : "+item.name+" : "+str(self.returnUserChoice())+" : "+str(self.returnAlgoNumber())+" : "+str(algorithm_object.getHash(self))
 
     def writeLineToFile(self, lineToWrite, file_hash):
         self.defaultPath = path.dirname(path.realpath(__file__))
         self.defaultPath += "\\"
         self.hash = file_hash
 
-        if path.isfile(self.defaultPath+"final.txt")  == False:
+        if not path.isfile(self.defaultPath+"final.txt"):
             with open(self.defaultPath+"final.txt","w+") as f:
                 f.write(lineToWrite+"\n")
                 f.close()
