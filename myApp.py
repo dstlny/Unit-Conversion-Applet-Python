@@ -5,7 +5,6 @@ from hashlib import sha3_512, sha256, md5
 from pathlib import Path
 from re import sub
 from datetime import datetime
-import time
 
 
 class AppFrame(wx.Frame):
@@ -39,6 +38,8 @@ class AppFrame(wx.Frame):
                 for i in self.contents:
                     currName, currFactor, currSymbol = i.split(",")
                     self.dict["British Pound (GBP) to " + currName] = (float(currFactor.replace(" ", "")), currSymbol.replace(" ", ""))
+                
+                self.onLoadedCurrencies()
 
             del self.contents
             del currName
@@ -191,41 +192,47 @@ class AppFrame(wx.Frame):
         self.openFileDialog.ShowModal()
         self.Refresh()
 
-        try:
-            self.contents = []
-            self.dict = {}
-            self.currName = ""
-            self.currFactor = 00.00
-            self.currSymbol = "'"
+        if not self.openFileDialog.GetFilename() or 'curr' not in self.openFileDialog.GetFilename():
+            self.onSelectionCanceled()
+        else:
 
-            with open(self.openFileDialog.GetPath(), "r", encoding="utf-8-sig") as f:
-                self.contents = [sub(r"[\n\t]*", "", x) for x in f.readlines()]
+            try:
+                self.contents = []
+                self.dict = {}
+                self.currName = ""
+                self.currFactor = 00.00
+                self.currSymbol = "'"
 
-                for i in self.contents:
+                with open(self.openFileDialog.GetPath(), "r", encoding="utf-8-sig") as f:
+                    self.contents = [sub(r"[\n\t]*", "", x) for x in f.readlines()]
 
-                    try:
-
-                        self.currName, self.currFactor, self.currSymbol = i.split(",")
+                    for i in self.contents:
 
                         try:
-                            self.currFactor = float(self.currFactor)
-                        except:
-                            self.currname = ""
-                            self.currFactor = 00.00
-                            self.currSymbol = ""
-                            continue
-                    except:
-                        continue
-                    finally:
-                        if self.currName and self.currFactor and self.currSymbol:
-                            self.currencyDrop.Clear()
-                            self.dict["British Pound (GBP) to " + self.currName] = (float(self.currFactor), self.currSymbol.replace(" ", ""))
-                            self.currencyDrop.Append(list(self.dict.keys()))
-                            self.measurementDrop.SetSelection(0)
-                            self.currencyDrop.SetSelection(0)
 
-        except Exception as exception:
-            print(exception)
+                            self.currName, self.currFactor, self.currSymbol = i.split(",")
+
+                            try:
+                                self.currFactor = float(self.currFactor)
+                            except:
+                                self.currname = ""
+                                self.currFactor = 00.00
+                                self.currSymbol = ""
+                                continue
+                        except:
+                            continue
+                        finally:
+                            if self.currName and self.currFactor and self.currSymbol:
+                                self.currencyDrop.Clear()
+                                self.dict["British Pound (GBP) to " + self.currName] = (float(self.currFactor), self.currSymbol.replace(" ", ""))
+                                self.currencyDrop.Append(list(self.dict.keys()))
+                                self.measurementDrop.SetSelection(0)
+                                self.currencyDrop.SetSelection(0)
+                    else:
+                        self.onLoadedCurrencies()
+
+            except Exception as exception:
+                print(exception)
  
     def loadFileorDirectory(self, event):
         self.defaultPath = path.dirname(path.realpath(__file__))
@@ -239,22 +246,24 @@ class AppFrame(wx.Frame):
         self.textArea.Clear()
         self.Refresh()
 
-        try:
+        if not self.openFileDialog.GetFilename():
+            self.onSelectionCanceled()
+        else:
 
-            self.start = time.time()
-
-            if self.returnUserChoice() == 0:
-                self.textArea.AppendText("Directory \"{}\"\nFile No, Filename, Hash".format(self.openFileDialog.GetDirectory()))
-                self.singleFile(self.openFileDialog.GetFilename(),  self.openFileDialog.GetDirectory())
-            elif self.returnUserChoice() == 1:
-                self.textArea.AppendText("Directory \"{}\"\nFile No, Filename, Hash".format(self.openFileDialog.GetDirectory()))
-                self.multipleFiles(self.openFileDialog.GetFilename(), self.openFileDialog.GetDirectory())
-            elif self.returnUserChoice() == 2:
-                self.textArea.AppendText("Directory \"{}\" meta-data\nFile No, Filename, Hash, Last Modified".format(self.openFileDialog.GetDirectory()))
-                self.multipleFilesMetaData(self.openFileDialog.GetFilename(), self.openFileDialog.GetDirectory())
-
-        except Exception as excepti:
-            print(excepti)
+            try:
+                
+                if self.returnUserChoice() == 0:
+                    self.textArea.AppendText("Directory \"{}\"\nFile No, Filename, Hash".format(self.openFileDialog.GetDirectory()))
+                    self.singleFile(self.openFileDialog.GetFilename(),  self.openFileDialog.GetDirectory())
+                elif self.returnUserChoice() == 1:
+                    self.textArea.AppendText("Directory \"{}\"\nFile No, Filename, Hash".format(self.openFileDialog.GetDirectory()))
+                    self.multipleFiles(self.openFileDialog.GetFilename(), self.openFileDialog.GetDirectory())
+                elif self.returnUserChoice() == 2:
+                    self.textArea.AppendText("Directory \"{}\" meta-data\nFile No, Filename, Hash, Last Modified".format(self.openFileDialog.GetDirectory()))
+                    self.multipleFilesMetaData(self.openFileDialog.GetFilename(), self.openFileDialog.GetDirectory())
+                
+            except Exception as excepti:
+                print(excepti)
 
     def onClear(self, event):
         """Do something"""
@@ -349,17 +358,17 @@ class AppFrame(wx.Frame):
 
     def onUnitConvert(self, event):
         """Do something"""
-        if self.unitUserInputBox.GetValue().isnumeric() is False:
-            self.onNonNumeric()
-        else:
+        if self.unitUserInputBox.GetValue().isnumeric():
             self.unitCalculation()
+        else:
+            self.onNonNumeric()
 
     def onCurrConvert(self, event):
         """Do something"""
-        if self.currencyInput.GetValue().isnumeric() is False:
-            self.onNonNumeric()
-        else:
+        if self.currencyInput.GetValue().isnumeric():
             self.currencyCalculation()
+        else:
+            self.onNonNumeric()
 
     def onAbout(self, event):
         """Display an About Dialog"""
@@ -404,14 +413,14 @@ class AppFrame(wx.Frame):
 
             algorithm_object = self.returnAlgorithmInstance()
             algorithm_object.produceFileHash(self, self.contents)
-            self.i += 1            
+            self.i += 1
             self.textArea.AppendText("\n{}.  {}  {}".format(self.i, filename, str(algorithm_object.getHash(self))))
                             
             if self.writeToFile.GetValue():
-                stringToWrite = directory+" : "+filename+" : "+str(self.returnUserChoice())+" : "+str(self.returnAlgoNumber())+" : "+str(algorithm_object.getHash(self))
+                stringToWrite = directory + " : " + filename + " : " + str(self.returnUserChoice()) + " : " + str(self.returnAlgoNumber()) + " : " + str(algorithm_object.getHash(self))
                 self.writeLineToFile(stringToWrite, str(algorithm_object.getHash(self)))
             else:
-                stringToWrite = directory+" : "+filename+" : "+str(self.returnUserChoice())+" : "+str(self.returnAlgoNumber())+" : "+str(algorithm_object.getHash(self))
+                stringToWrite = directory + " : " + filename + " : " + str(self.returnUserChoice()) + " : " + str(self.returnAlgoNumber()) + " : " + str(algorithm_object.getHash(self))
 
     def multipleFiles(self, filename, directory):
         del filename
@@ -429,13 +438,13 @@ class AppFrame(wx.Frame):
                     algorithm_object = self.returnAlgorithmInstance()
                     algorithm_object.produceDirHash(self, self.contents)
                     self.i += 1
-                    self.textArea.AppendText("\n{}.  {}  {}".format(self.i,item.name,str(algorithm_object.getHash(self))))
+                    self.textArea.AppendText("\n{}.  {}  {}".format(self.i, item.name, str(algorithm_object.getHash(self))))
            
                     if self.writeToFile.GetValue():
-                        stringToWrite = directory+" : "+item.name+" : "+str(self.returnUserChoice())+" : "+str(self.returnAlgoNumber())+" : "+str(algorithm_object.getHash(self))
+                        stringToWrite = directory + " : " + item.name + " : " + str(self.returnUserChoice()) + " : " + str(self.returnAlgoNumber()) + " : " + str(algorithm_object.getHash(self))
                         self.writeLineToFile(stringToWrite, str(algorithm_object.getHash(self)))
                     else:
-                        stringToWrite = directory+" : "+item.name+" : "+str(self.returnUserChoice())+" : "+str(self.returnAlgoNumber())+" : "+str(algorithm_object.getHash(self))
+                        stringToWrite = directory + " : " + item.name + " : " + str(self.returnUserChoice()) + " : " + str(self.returnAlgoNumber()) + " : " + str(algorithm_object.getHash(self))
 
     def multipleFilesMetaData(self, filename, directory):
         del filename
@@ -449,31 +458,29 @@ class AppFrame(wx.Frame):
             algorithm_object.produceDirMetaHash(self, self.importedFile.st_size)
 
             self.i += 1
-            self.textArea.AppendText("\n{}.  {}  {}  {}".format(self.i,item.name,str(algorithm_object.getHash(self)), datetime.fromtimestamp(self.importedFile.st_mtime)))
+            self.textArea.AppendText("\n{}.  {}  {}  {}".format(self.i, item.name, str(algorithm_object.getHash(self)), datetime.fromtimestamp(self.importedFile.st_mtime)))
 
             if self.writeToFile.GetValue():
-                stringToWrite = directory+" : "+item.name+" : "+str(self.returnUserChoice())+" : "+str(self.returnAlgoNumber())+" : "+str(algorithm_object.getHash(self))
+                stringToWrite = directory + " : " + item.name + " : " + str(self.returnUserChoice()) + " : " + str(self.returnAlgoNumber()) + " : " + str(algorithm_object.getHash(self))
                 self.writeLineToFile(stringToWrite, str(algorithm_object.getHash(self)))
             else:
-                stringToWrite = directory+" : "+item.name+" : "+str(self.returnUserChoice())+" : "+str(self.returnAlgoNumber())+" : "+str(algorithm_object.getHash(self))
+                stringToWrite = directory + " : " + item.name + " : " + str(self.returnUserChoice()) + " : " + str(self.returnAlgoNumber()) + " : " + str(algorithm_object.getHash(self))
 
     def writeLineToFile(self, lineToWrite, file_hash):
-        self.defaultPath = path.dirname(path.realpath(__file__))
-        self.defaultPath += "\\"
+        defaultPath = path.dirname(path.realpath(__file__))
+        defaultPath += "\\"
         self.hash = file_hash
 
-        if not path.isfile(self.defaultPath+"final.txt"):
-            with open(self.defaultPath+"final.txt","w+") as f:
+        if not path.isfile(defaultPath+"final.txt"):
+            with open(defaultPath+"final.txt","w+") as f:
                 f.write(lineToWrite+"\n")
                 f.close()
         else:
-            self.contents = set([sub(r"[\n\t]*", "", line) for line in open(self.defaultPath+"final.txt")])
+            self.contents = set([sub(r"[\n\t]*", "", line) for line in open(defaultPath+"final.txt")])
             
             imported_path, imported_file, imported_choice, imported_algo, imported_hashy_boi = lineToWrite.split(" : ")
             imported_hashy_boi = self.hash
 
-            self.end = time.time()
-            print("Operation took {} seconds".format(self.end - self.start))
             if self.contents:
 
                 for line in self.contents:
@@ -487,30 +494,37 @@ class AppFrame(wx.Frame):
                         self.contents.remove(this_string)
                         self.contents.add(string_to_add)
                         self.onAltered(file_name, hashy_boi, imported_hashy_boi)
-                        print("-------------\nfallen into main if statement\nline removed = {}\nline added = {}".format(this_string, string_to_add))
-                        self.cleaned = True
-
-                        if self.cleaned:
-                            with open(self.defaultPath+"final.txt","w+") as f:
-                                for self.this_line in self.contents:
-                                    f.write(self.this_line+"\n")
+                        print("-------------\nline removed = {}\nline added   = {}".format(this_string, string_to_add))
+                        
+                        with open(defaultPath+"final.txt","w+") as f:
+                            for self.this_line in self.contents:
+                                f.write(self.this_line+"\n")
                     
                     else: ##this must mean that the curent imported file does not exist within final.txt, thus print it to the file
                         string_to_add = imported_path  + " : " + imported_file  + " : " + imported_choice  + " : " + imported_algo + " : " + imported_hashy_boi
-                        self.contents = set([line.strip("\n") for line in open(self.defaultPath+"final.txt")])
+                        self.contents = set([line.strip("\n") for line in open(defaultPath+"final.txt")])
                         self.contents.add(string_to_add)
-                        with open(self.defaultPath+"final.txt","w+") as f:
+                        with open(defaultPath+"final.txt","w+") as f:
                             for extra in self.contents:
                                 f.write(extra+"\n")
 
             else:
-                with open(self.defaultPath+"final.txt","w+") as f:
+                with open(defaultPath+"final.txt","w+") as f:
                     f.write(lineToWrite+"\n")
                     f.close()
 
     def onAltered(self, fileAltered, oldFileHash, newFileHash):
         """Display dialog saying it"s empty"""
-        wx.MessageBox("Old hash is \"{}\"\nNew hash \"{}\"".format(oldFileHash,newFileHash), "\"{}\" altered".format(fileAltered), wx.OK | wx.ICON_ERROR)
+        wx.MessageBox(message="Old hash is \"{}\"\nNew hash \"{}\"".format(oldFileHash,newFileHash),caption= "\"{}\" altered".format(fileAltered), style=wx.OK | wx.ICON_ERROR)
+
+    def onSelectionCanceled(self):
+        """Display dialog saying it"s empty"""
+        wx.MessageBox(message="User has cancelled file / directory selection",caption= "[ERROR OCCURED]", style=wx.OK)
+
+    def onLoadedCurrencies(self):
+        """Display dialog saying it"s empty"""
+        wx.MessageBox(message="Currencies available are {}".format([x.replace("British Pound (GBP) to ","") for x in list(self.dict.keys())]),caption= "Currency data has been loaded successfully!", style=wx.OK)
+        
 
 class algorithmGeneration:
 
