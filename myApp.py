@@ -66,13 +66,13 @@ class AppFrame(wx.Frame):
         self.measureResult = 00.00
         self.currencyConvertLab = 00.00
         self.unitCombo = ["Inches/Centimeters", "Miles/Kilometres", "Pounds/Kilograms", "Gallons/Litres", "Feet/Metres", "Celcius/Kelvin", "Acres/Hectare"]
-        self.CountText = "   Conversion Count: "
+        self.countText = "   Conversion Count: "
 
         # Creating various UI elements for the unit conversion module
         self.unitConversion = wx.StaticBox(self.mainPanel, wx.ID_ANY, "Unit Conversion", size=(850, 100))
         self.userInputLabel = wx.StaticText(self.mainPanel, wx.ID_ANY, "   Value: ")
         self.unitResultLabel = wx.StaticText(self.mainPanel, wx.ID_ANY, "  "+str(self.measureResult)+"                ")
-        self.globalCountText = wx.StaticText(self.mainPanel, wx.ID_ANY, self.CountText + str(self.globalCount) + "   ")
+        self.globalCountText = wx.StaticText(self.mainPanel, wx.ID_ANY, self.countText + str(self.globalCount) + "   ")
         self.unitUserInputBox = wx.TextCtrl(self.mainPanel, wx.ID_ANY, "")
         self.unitConvertButton = wx.Button(self.mainPanel, wx.ID_ANY, "Convert")
         self.clearThings = wx.Button(self.mainPanel, wx.ID_ANY, "Clear")
@@ -129,7 +129,7 @@ class AppFrame(wx.Frame):
 
         # Creating various UI elements for the unit hash-algorithm picker module
         self.algorithmSelection = wx.StaticBox(self.mainPanel, wx.ID_ANY, "Algorithms", pos=(340, 163), size=(242, 115))
-        self.algorithms = ["Message Digest 5, 128-bit", "Secure Haashing Algorithm, 256-bit", "Secure Hashing Algorithm 3, 512-bit"]
+        self.algorithms = ["Message Digest 5, 128-bit", "Secure Haahing Algorithm, 256-bit", "Secure Hashing Algorithm 3, 512-bit"]
         self.algorithmChoices = wx.RadioBox(self.mainPanel, wx.ID_ANY, choices=self.algorithms, pos=(350, 180), style=wx.RA_SPECIFY_ROWS)
 
         # Creating various UI elements for the logging module
